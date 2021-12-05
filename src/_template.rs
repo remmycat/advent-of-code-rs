@@ -10,22 +10,28 @@ mod tests {
 	use std::fs;
 
 	#[test]
-	fn part_1_example_cases() {}
-
-	#[test]
-	fn part_1_solution() {
-		// let input = fs::read_to_string("assets/20xx/input_xx.txt").unwrap();
-
-		// assert_eq!(solve(&input), something);
+	fn part_1_example_cases() {
+		unimplemented!();
 	}
 
 	#[test]
-	fn part_2_example_cases() {}
+	fn part_1_solution() {
+		unimplemented!();
+		// let input = fs::read_to_string("assets/20xx/input_xx.txt").unwrap();
+
+		// assert_eq!(solve(&input).value, something);
+	}
+
+	#[test]
+	fn part_2_example_cases() {
+		unimplemented!();
+	}
 
 	#[test]
 	fn part_2_solution() {
+		unimplemented!();
 		// let input = fs::read_to_string("assets/20xx/input_xx.txt").unwrap();
 
-		// assert_eq!(solve(&input), something);
+		// assert_eq!(solve(&input).value, something);
 	}
 }

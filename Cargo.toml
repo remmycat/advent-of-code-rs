@@ -8,3 +8,4 @@ license = "MIT"
 
 [dependencies]
 anyhow = "1.0"
+md5 = "0.7.0"
