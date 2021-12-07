@@ -34,6 +34,7 @@ struct Instruction {
 	task: Task,
 	x_range: RangeInclusive<u16>,
 	y_range: RangeInclusive<u16>,
+	y_applies: bool,
 	next: Option<Box<Instruction>>,
 }
 
@@ -55,20 +56,29 @@ impl FromStr for Instruction {
 			task,
 			x_range: start.x..=end.x,
 			y_range: start.y..=end.y,
+			y_applies: true,
 			next: None,
 		})
 	}
 }
 
 struct Light {
-	at: Coordinates,
+	x: u16,
 	is_on: bool,
 	brightness: u16,
 }
 
 impl Instruction {
+	fn set_y(&mut self, y: &u16) {
+		self.y_applies = self.y_range.contains(y);
+
+		if self.next.is_some() {
+			self.next.as_mut().unwrap().set_y(y);
+		}
+	}
+
 	fn execute(&self, mut light: Light) -> Light {
-		let applies = self.x_range.contains(&light.at.x) && self.y_range.contains(&light.at.y);
+		let applies = self.y_applies && self.x_range.contains(&light.x);
 
 		if applies {
 			match self.task {
@@ -95,7 +105,7 @@ impl Instruction {
 }
 
 fn solve(input: &str) -> Solution {
-	let compiled_instructions = input
+	let mut compiled_instructions = input
 		.lines()
 		.map(|line| line.parse::<Instruction>().unwrap())
 		.rfold(None, |next, mut ins| {
@@ -108,11 +118,12 @@ fn solve(input: &str) -> Solution {
 	let mut allover_brightness = 0;
 
 	for y in 0..=999 {
+		compiled_instructions.set_y(&y);
 		for x in 0..=999 {
 			let Light {
 				is_on, brightness, ..
 			} = compiled_instructions.execute(Light {
-				at: Coordinates { x, y },
+				x,
 				is_on: false,
 				brightness: 0,
 			});
@@ -145,7 +156,6 @@ mod tests {
 	}
 
 	#[test]
-	#[ignore] // Takes ~ 12s
 	fn part_1_solution() {
 		let input = fs::read_to_string("assets/2015/input_06.txt").unwrap();
 
@@ -166,7 +176,6 @@ mod tests {
 	}
 
 	#[test]
-	#[ignore] // Takes ~ 12s
 	fn part_2_solution() {
 		let input = fs::read_to_string("assets/2015/input_06.txt").unwrap();
 
