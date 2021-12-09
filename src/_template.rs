@@ -19,7 +19,7 @@ mod tests {
 		unimplemented!();
 		// let input = fs::read_to_string("assets/20xx/input_xx.txt").unwrap();
 
-		// assert_eq!(solve(&input).value, something);
+		// assert_eq!(solve(input.trim()).value, something);
 	}
 
 	#[test]
@@ -32,6 +32,6 @@ mod tests {
 		unimplemented!();
 		// let input = fs::read_to_string("assets/20xx/input_xx.txt").unwrap();
 
-		// assert_eq!(solve(&input).value, something);
+		// assert_eq!(solve(input.trim()).value, something);
 	}
 }
