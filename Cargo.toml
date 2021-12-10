@@ -9,6 +9,7 @@ license = "MIT"
 [dependencies]
 anyhow = "1.0"
 md5 = "0.7.0"
+itertools = "0.10"
 
 [profile.test]
 opt-level = 3
