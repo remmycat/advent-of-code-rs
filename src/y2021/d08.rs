@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-struct Solution {
+pub struct Solution {
 	easy_digits: u32,
 	outputs_sum: u32,
 }
@@ -75,7 +75,7 @@ fn solve_digits(ten_digits: &str) -> [Digit; 10] {
 	[zero, one, two, three, four, five, six, seven, eight, nine]
 }
 
-fn solve(input: &str) -> Solution {
+pub fn solve(input: &str) -> Solution {
 	let (easy_digits, outputs_sum) = input
 		.lines()
 		.map(|line| {

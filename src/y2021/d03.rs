@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use anyhow::{Error, Result};
 
-struct Solution {
+pub struct Solution {
 	gamma: i128,
 	epsilon: i128,
 	oxygen_generator_rating: i128,
@@ -135,7 +135,7 @@ impl<const N: usize> DiagnosticCollection<N> {
 	}
 }
 
-fn solve<const N: usize>(input: &str) -> Solution {
+pub fn solve<const N: usize>(input: &str) -> Solution {
 	let mut dias = DiagnosticCollection::new();
 
 	input

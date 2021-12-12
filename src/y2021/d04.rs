@@ -1,7 +1,7 @@
 use anyhow::{Error, Result};
 use std::str::FromStr;
 
-struct Solution {
+pub struct Solution {
 	first_win_score: u128,
 	last_win_score: u128,
 }
@@ -96,7 +96,7 @@ impl BingoCard {
 	}
 }
 
-fn solve(input: &str) -> Solution {
+pub fn solve(input: &str) -> Solution {
 	let mut blocks = input.split("\n\n");
 
 	let called: Vec<_> = blocks

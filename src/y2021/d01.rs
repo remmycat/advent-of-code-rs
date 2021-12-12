@@ -1,9 +1,9 @@
-struct Solution {
+pub struct Solution {
 	depth_increases: u128,
 	average_depth_increases: u128,
 }
 
-fn solve(input: &str) -> Solution {
+pub fn solve(input: &str) -> Solution {
 	let measurements: Vec<_> = input.lines().map(|l| l.parse::<i128>().unwrap()).collect();
 
 	let mut solution = Solution {

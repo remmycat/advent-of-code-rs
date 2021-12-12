@@ -1,4 +1,4 @@
-struct Solution {
+pub struct Solution {
 	lowest_cost_misunderstood: i32,
 	lowest_cost_understood: i32,
 }
@@ -10,7 +10,7 @@ fn fuel_sum(num: i32) -> i32 {
 	(num as f64 * (num as f64 + 1.0) / 2.0) as i32
 }
 
-fn solve(input: &str) -> Solution {
+pub fn solve(input: &str) -> Solution {
 	let nums: Vec<i32> = input
 		.split(',')
 		.map(|n| n.parse::<i32>().unwrap())

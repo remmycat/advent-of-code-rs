@@ -13,3 +13,10 @@ itertools = "0.10"
 
 [profile.test]
 opt-level = 3
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "y2021"
+harness = false

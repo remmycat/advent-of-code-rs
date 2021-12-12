@@ -1,4 +1,4 @@
-struct Solution {
+pub struct Solution {
 	corrupted_score: usize,
 	unclosed_middle_score: usize,
 }
@@ -44,7 +44,7 @@ fn get_error_score(line: &str) -> LineScore {
 	}))
 }
 
-fn solve(input: &str) -> Solution {
+pub fn solve(input: &str) -> Solution {
 	let scores: Vec<_> = input.lines().map(get_error_score).collect();
 
 	let corrupted_score = scores

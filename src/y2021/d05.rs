@@ -3,7 +3,7 @@ use anyhow::Error;
 use std::collections::HashSet;
 use std::str::FromStr;
 
-struct Solution {
+pub struct Solution {
 	straight_intersections: usize,
 	all_intersections: usize,
 }
@@ -124,7 +124,7 @@ impl Map {
 	}
 }
 
-fn solve(input: &str) -> Solution {
+pub fn solve(input: &str) -> Solution {
 	let mut map = Map::new();
 
 	input

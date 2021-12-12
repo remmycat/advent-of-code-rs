@@ -1,6 +1,4 @@
 #![allow(dead_code)]
 
 mod y2015;
-mod y2021;
-
-fn main() {}
+pub mod y2021;

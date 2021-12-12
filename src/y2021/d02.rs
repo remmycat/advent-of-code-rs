@@ -1,7 +1,7 @@
 use anyhow::{bail, Error, Result};
 use std::str::FromStr;
 
-struct Solution {
+pub struct Solution {
 	depth: i128,
 	distance: i128,
 	aimed_depth: i128,
@@ -64,7 +64,7 @@ impl Submarine {
 	}
 }
 
-fn solve(input: &str) -> Solution {
+pub fn solve(input: &str) -> Solution {
 	let mut sub = Submarine::new();
 
 	input

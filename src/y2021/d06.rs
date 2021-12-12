@@ -2,7 +2,7 @@ use std::{collections::VecDeque, str::FromStr};
 
 use anyhow::Error;
 
-struct Solution {
+pub struct Solution {
 	fish_count_80: u128,
 	fish_count_256: u128,
 }
@@ -44,7 +44,7 @@ impl FromStr for Population {
 	}
 }
 
-fn solve(input: &str) -> Solution {
+pub fn solve(input: &str) -> Solution {
 	let mut pop = input.parse::<Population>().unwrap();
 
 	for _day in 1..=80 {

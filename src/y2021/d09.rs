@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-struct Solution {
+pub struct Solution {
 	risk_level_sum: u32,
 	top_3_multiplied: u128,
 }
@@ -45,7 +45,7 @@ fn get_surroundings(points: &[u8], x_size: usize, xy: usize) -> Surroundings {
 	}
 }
 
-fn solve(input: &str) -> Solution {
+pub fn solve(input: &str) -> Solution {
 	let rows: Vec<_> = input.lines().collect();
 	let x_size = rows.get(0).unwrap().len();
 
@@ -136,7 +136,7 @@ mod tests {
 3987894921
 9856789892
 8767896789
-9899965678        
+9899965678
 "#;
 		assert_eq!(solve(example.trim()).risk_level_sum, 15);
 	}
@@ -155,7 +155,7 @@ mod tests {
 3987894921
 9856789892
 8767896789
-9899965678        
+9899965678
 "#;
 		assert_eq!(solve(example.trim()).top_3_multiplied, 1134);
 	}

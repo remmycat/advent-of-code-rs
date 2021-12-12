@@ -1,5 +1,5 @@
-struct Solution {
-	total_flashes: usize,
+pub struct Solution {
+	total_flashes_100: usize,
 	first_mega_flash: Option<usize>,
 }
 
@@ -28,7 +28,7 @@ fn count_octopile(octopi: &[u8], x_size: usize, xy: usize) -> u8 {
 	.sum()
 }
 
-fn solve(input: &str, steps: usize) -> Solution {
+pub fn solve(input: &str) -> Solution {
 	let rows: Vec<_> = input.lines().collect();
 	let x_size = rows.get(0).unwrap().len();
 
@@ -36,11 +36,11 @@ fn solve(input: &str, steps: usize) -> Solution {
 		.into_iter()
 		.flat_map(|line| line.chars().map(|c| c.to_digit(10).unwrap() as u8))
 		.collect();
-	let mut total_flashes = 0;
+	let mut total_flashes_100 = 0;
 	let mut flash_mob = false;
 	let mut first_mega_flash = None;
 
-	for step in 1..=steps {
+	for step in 1.. {
 		octopi.iter_mut().for_each(|oct| {
 			if *oct == 9 {
 				flash_mob = true;
@@ -59,7 +59,9 @@ fn solve(input: &str, steps: usize) -> Solution {
 					if oct == 0 {
 						0
 					} else if oct > 9 {
-						total_flashes += 1;
+						if step <= 100 {
+							total_flashes_100 += 1;
+						}
 						0
 					} else {
 						let flashes = count_octopile(&octopi, x_size, xy);
@@ -77,11 +79,12 @@ fn solve(input: &str, steps: usize) -> Solution {
 
 		if first_mega_flash.is_none() && octopi.iter().all(|oct| *oct == 0) {
 			first_mega_flash = Some(step);
+			break;
 		}
 	}
 
 	Solution {
-		total_flashes,
+		total_flashes_100,
 		first_mega_flash,
 	}
 }
@@ -93,16 +96,6 @@ mod tests {
 
 	#[test]
 	fn part_1_example_cases() {
-		let mini = r#"
-11111
-19991
-19191
-19991
-11111
-"#;
-
-		assert_eq!(solve(mini.trim(), 3).total_flashes, 9);
-
 		let big = r#"
 5483143223
 2745854711
@@ -116,14 +109,14 @@ mod tests {
 5283751526
 "#;
 
-		assert_eq!(solve(big.trim(), 100).total_flashes, 1656);
+		assert_eq!(solve(big.trim()).total_flashes_100, 1656);
 	}
 
 	#[test]
 	fn part_1_solution() {
 		let input = fs::read_to_string("assets/2021/input_11.txt").unwrap();
 
-		assert_eq!(solve(input.trim(), 100).total_flashes, 1655);
+		assert_eq!(solve(input.trim()).total_flashes_100, 1655);
 	}
 
 	#[test]
@@ -141,13 +134,13 @@ mod tests {
 5283751526
 "#;
 
-		assert_eq!(solve(big.trim(), 200).first_mega_flash, Some(195));
+		assert_eq!(solve(big.trim()).first_mega_flash, Some(195));
 	}
 
 	#[test]
 	fn part_2_solution() {
 		let input = fs::read_to_string("assets/2021/input_11.txt").unwrap();
 
-		assert_eq!(solve(input.trim(), 350).first_mega_flash, Some(337));
+		assert_eq!(solve(input.trim()).first_mega_flash, Some(337));
 	}
 }
