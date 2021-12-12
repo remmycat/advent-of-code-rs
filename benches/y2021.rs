@@ -59,6 +59,11 @@ pub fn y2021(c: &mut Criterion) {
 	group.bench_with_input("Day 11: Dumbo Octopus", &input_11, |b, i| {
 		b.iter(|| d11::solve(i))
 	});
+
+	let input_12 = fs::read_to_string("assets/2021/input_12.txt").unwrap();
+	group.bench_with_input("Day 12: Passage Pathing", &input_12, |b, i| {
+		b.iter(|| d12::solve(i))
+	});
 }
 
 criterion_group! {
