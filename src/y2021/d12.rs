@@ -18,6 +18,7 @@ struct Cave {
 	is_small: bool,
 }
 
+#[allow(clippy::ptr_arg)]
 fn is_big_cave(s: &String) -> bool {
 	s.chars().next().unwrap().is_ascii_uppercase()
 }
@@ -51,7 +52,7 @@ fn walk_the_caves(
 	small_visited: &HashSet<String>,
 	extra_peek: Option<String>,
 ) -> (usize, usize) {
-	if current == "end".to_string() {
+	if current == "end" {
 		return if extra_peek.is_some() { (0, 1) } else { (1, 1) };
 	}
 	let cave = caves.get(&current).unwrap();
