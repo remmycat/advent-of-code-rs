@@ -1,8 +1,9 @@
 use anyhow::{bail, Error};
+use hashbrown::HashSet;
 // As much as I like to try to implement things on my own, trying to create my
 // own .permutations() while knowing itertools exist was too frustrating.
 use itertools::Itertools;
-use std::{collections::HashSet, str::FromStr};
+use std::str::FromStr;
 
 struct Solution {
 	shortest_distance: usize,

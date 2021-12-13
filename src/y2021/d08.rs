@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use hashbrown::HashSet;
 
 pub struct Solution {
 	easy_digits: u32,

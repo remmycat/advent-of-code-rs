@@ -1,6 +1,7 @@
-use std::{collections::HashMap, str::FromStr};
+use std::str::FromStr;
 
 use anyhow::{bail, Error, Result};
+use hashbrown::HashMap;
 
 type Bits = u16;
 

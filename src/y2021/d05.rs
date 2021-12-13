@@ -1,6 +1,6 @@
 #![allow(clippy::many_single_char_names)]
 use anyhow::Error;
-use std::collections::HashSet;
+use hashbrown::HashSet;
 use std::str::FromStr;
 
 pub struct Solution {
