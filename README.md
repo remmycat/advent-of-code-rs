@@ -1,4 +1,4 @@
-# Advent of Code in Rμst - remmycat's solutions
+# Advent of Code in Rust - remmycat's solutions
 
 Benchmarks on MacBook Pro (13-inch, 2019), 2.8 GHz Quad-Core Intel Core i7
 
