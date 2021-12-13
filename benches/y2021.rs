@@ -64,11 +64,16 @@ pub fn y2021(c: &mut Criterion) {
 	group.bench_with_input("Day 12: Passage Pathing", &input_12, |b, i| {
 		b.iter(|| d12::solve(i))
 	});
+
+	let input_13 = fs::read_to_string("assets/2021/input_13.txt").unwrap();
+	group.bench_with_input("Day 13: Transparent Origami", &input_13, |b, i| {
+		b.iter(|| d13::solve(i))
+	});
 }
 
 criterion_group! {
 	name = benches;
-	config = Criterion::default().warm_up_time(Duration::from_millis(100)).sample_size(10);
+	config = Criterion::default().warm_up_time(Duration::from_millis(2000)).sample_size(50);
 	targets = y2021
 }
 criterion_main!(benches);

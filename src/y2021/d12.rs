@@ -5,13 +5,6 @@ pub struct Solution {
 	cave_paths_with_extra_peek: usize,
 }
 
-enum NodeType {
-	Start,
-	End,
-	Small,
-	Big,
-}
-
 struct Cave {
 	big_outs: Vec<String>,
 	small_outs: Vec<String>,
