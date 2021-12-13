@@ -9,6 +9,7 @@ struct Cave {
 	big_outs: Vec<String>,
 	small_outs: Vec<String>,
 	is_small: bool,
+	bit_mask: u16,
 }
 
 #[allow(clippy::ptr_arg)]
@@ -18,7 +19,7 @@ fn is_big_cave(s: &String) -> bool {
 
 type Tunnel = [String; 2];
 impl Cave {
-	fn new(name: String, tunnels: &[Tunnel]) -> Self {
+	fn new(name: String, index: usize, tunnels: &[Tunnel]) -> Self {
 		let (big_outs, small_outs) = tunnels
 			.iter()
 			.filter_map(|tunnel| match tunnel {
@@ -28,9 +29,12 @@ impl Cave {
 			})
 			.partition(is_big_cave);
 
+		let bit_mask = 1_u16 << index;
+
 		Cave {
 			big_outs,
 			small_outs,
+			bit_mask,
 			is_small: !is_big_cave(&name),
 		}
 	}
@@ -41,37 +45,36 @@ type Caves = HashMap<String, Cave>;
 
 fn walk_the_caves(
 	caves: &Caves,
-	current: String,
-	small_visited: &HashSet<String>,
-	extra_peek: Option<String>,
+	current: &str,
+	small_visited: u16,
+	extra_peek: bool,
 ) -> (usize, usize) {
 	if current == "end" {
-		return if extra_peek.is_some() { (0, 1) } else { (1, 1) };
+		return if extra_peek { (0, 1) } else { (1, 1) };
 	}
-	let cave = caves.get(&current).unwrap();
+	let cave = caves.get(current).unwrap();
 
-	let mut small_vis_next = small_visited.clone();
+	let mut small_vis_next = small_visited;
 	if cave.is_small {
-		small_vis_next.insert(current);
+		small_vis_next += cave.bit_mask;
 	}
-
-	let can_collect_extra = extra_peek.is_none();
 
 	let mut sum = 0;
 	let mut sum_with_extra = 0;
 	for out in cave.big_outs.iter() {
-		let res = walk_the_caves(caves, out.to_owned(), &small_vis_next, extra_peek.clone());
+		let res = walk_the_caves(caves, out.as_str(), small_vis_next, extra_peek);
 		sum += res.0;
 		sum_with_extra += res.1;
 	}
 	for out in cave.small_outs.iter() {
-		if !small_visited.contains(out) {
-			let res = walk_the_caves(caves, out.to_owned(), &small_vis_next, extra_peek.clone());
+		let is_visited = small_visited & caves.get(out).unwrap().bit_mask != small_visited;
+
+		if !is_visited {
+			let res = walk_the_caves(caves, out.as_str(), small_vis_next, extra_peek);
 			sum += res.0;
 			sum_with_extra += res.1;
-		} else if can_collect_extra && out != "start" {
-			sum_with_extra +=
-				walk_the_caves(caves, out.to_owned(), &small_vis_next, Some(out.to_owned())).1;
+		} else if !extra_peek && out != "start" {
+			sum_with_extra += walk_the_caves(caves, out.as_str(), small_vis_next, true).1;
 		}
 	}
 
@@ -91,13 +94,14 @@ pub fn solve(input: &str) -> Solution {
 		.collect();
 
 	let caves: HashSet<String> = tunnels.clone().into_iter().flatten().collect();
+
 	let caves: Caves = caves
 		.into_iter()
-		.map(|name| (name.to_string(), Cave::new(name, &tunnels)))
+		.enumerate()
+		.map(|(index, name)| (name.to_string(), Cave::new(name, index, &tunnels)))
 		.collect();
 
-	let (cave_paths, cave_paths_with_extra_peek) =
-		walk_the_caves(&caves, "start".to_string(), &HashSet::new(), None);
+	let (cave_paths, cave_paths_with_extra_peek) = walk_the_caves(&caves, "start", 0, false);
 
 	Solution {
 		cave_paths,

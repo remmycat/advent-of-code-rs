@@ -17,5 +17,5 @@ Benchmarks on MacBook Pro (13-inch, 2019), 2.8 GHz Quad-Core Intel Core i7
 | 2021 – Day 09: Smoke Basin | <code><sub>844.84 μs</sub> 847.79 μs <sub>851.20 μs</sub></code> |
 | 2021 – Day 10: Syntax Scoring | <code><sub>93.844 μs</sub> 95.318 μs <sub>97.024 μs</sub></code> |
 | 2021 – Day 11: Dumbo Octopμs | <code><sub>1.6699 ms</sub> 1.6921 ms <sub>1.7142 ms</sub></code> |
-| 2021 – Day 12: Passage Pathing | <code><sub>235.78 ms</sub> 237.89 ms <sub>240.11 ms</sub></code> |
+| 2021 – Day 12: Passage Pathing | <code><sub>43.313 μs</sub> 43.796 μs <sub>44.341 μs</sub></code> |
 | 2021 – Day 13: Transparent Origami | <code><sub>151.52 μs</sub> 155.18 μs <sub>159.21 μs</sub></code> |
