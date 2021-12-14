@@ -8,19 +8,15 @@ pub struct Solution {
 	all_intersections: usize,
 }
 
-#[derive(Clone, PartialEq, Debug)]
-enum LineDirection {
-	Horizontal,
-	Vertical,
-	Other,
-}
-
 #[derive(Clone, Debug)]
 struct Line {
-	start: (i32, i32),
-	end: (i32, i32),
-	direction: LineDirection,
+	start: (u16, u16),
+	end: (u16, u16),
+	is_straight: bool,
+	direction: (i8, i8),
 }
+
+const X_SIZE: u16 = 1000;
 
 impl FromStr for Line {
 	type Err = Error;
@@ -31,7 +27,7 @@ impl FromStr for Line {
 			.map(|coord| {
 				let coords: Vec<_> = coord
 					.split(',')
-					.map(|c| c.parse::<i32>().unwrap())
+					.map(|c| c.parse::<u16>().unwrap())
 					.collect();
 				assert_eq!(coords.len(), 2);
 
@@ -44,97 +40,99 @@ impl FromStr for Line {
 		let start = parts[0];
 		let end = parts[1];
 
-		let direction = match (start, end) {
-			((x1, _), (x2, _)) if x1 == x2 => LineDirection::Vertical,
-			((_, y1), (_, y2)) if y1 == y2 => LineDirection::Horizontal,
-			_ => LineDirection::Other,
+		let is_straight = start.0 == end.0 || start.1 == end.1;
+
+		let x_direction: i8 = match end.0 - start.0 {
+			0 => 0,
+			i if i > 0 => 1,
+			_ => -1,
+		};
+		let y_direction: i8 = match end.1 - start.1 {
+			0 => 0,
+			i if i > 0 => 1,
+			_ => -1,
 		};
 
 		Ok(Line {
 			start,
 			end,
-			direction,
+			is_straight,
+			direction: (x_direction, y_direction),
 		})
 	}
 }
 
-impl Line {
-	fn is_straight(&self) -> bool {
-		self.direction == LineDirection::Horizontal || self.direction == LineDirection::Vertical
+impl IntoIterator for Line {
+	type Item = u16;
+	type IntoIter = LineIterator;
+
+	fn into_iter(self) -> Self::IntoIter {
+		let size = (self.end.0 as i32 - self.start.0 as i32)
+			.abs()
+			.max((self.end.1 as i32 - self.start.1 as i32).abs()) as usize
+			+ 1;
+
+		LineIterator {
+			size,
+			end: self.end,
+			direction: self.direction,
+		}
 	}
 }
 
-struct Map {
-	straight_intersections: HashSet<(i32, i32)>,
-	all_intersections: HashSet<(i32, i32)>,
-	straight_points: HashSet<(i32, i32)>,
-	all_points: HashSet<(i32, i32)>,
+struct LineIterator {
+	size: usize,
+	end: (u16, u16),
+	direction: (i8, i8),
 }
 
-impl Map {
-	fn new() -> Self {
-		Map {
-			straight_points: HashSet::new(),
-			all_points: HashSet::new(),
-			straight_intersections: HashSet::new(),
-			all_intersections: HashSet::new(),
-		}
+impl Iterator for LineIterator {
+	type Item = u16;
+
+	fn size_hint(&self) -> (usize, Option<usize>) {
+		(self.size, Some(self.size))
 	}
 
-	fn draw_point(&mut self, coords: (i32, i32), is_straight: bool) {
-		if is_straight {
-			if self.straight_points.contains(&coords) {
-				self.straight_intersections.insert(coords);
-			} else {
-				self.straight_points.insert(coords);
-			}
-		}
-		if self.all_points.contains(&coords) {
-			self.all_intersections.insert(coords);
+	fn next(&mut self) -> Option<Self::Item> {
+		if self.size == 0 {
+			None
 		} else {
-			self.all_points.insert(coords);
-		}
-	}
-
-	fn draw_line(&mut self, line: Line) {
-		let x_direction: i32 = match line.end.0 - line.start.0 {
-			0 => 0,
-			i if i > 0 => 1,
-			_ => -1,
-		};
-		let y_direction: i32 = match line.end.1 - line.start.1 {
-			0 => 0,
-			i if i > 0 => 1,
-			_ => -1,
-		};
-
-		let mut current = line.start.to_owned();
-
-		let is_straight = line.is_straight();
-
-		loop {
-			self.draw_point(current, is_straight);
-			if current.0 == line.end.0 && current.1 == line.end.1 {
-				break;
-			}
-
-			current.0 += x_direction;
-			current.1 += y_direction;
+			let size_mult = self.size as u16 - 1;
+			let x = self.end.0 - self.direction.0 as u16 * size_mult;
+			let y = self.end.1 - self.direction.1 as u16 * size_mult;
+			self.size -= 1;
+			Some(y * X_SIZE + x)
 		}
 	}
 }
 
 pub fn solve(input: &str) -> Solution {
-	let mut map = Map::new();
+	let lines = input.lines().map(|l| Line::from_str(l).unwrap());
 
-	input
-		.lines()
-		.map(|input_line| input_line.parse::<Line>().unwrap())
-		.for_each(|line| map.draw_line(line));
+	debug_assert!(lines.clone().map(|l| l.start.0.max(l.end.0)).max().unwrap() < X_SIZE);
+
+	let mut straight_points: HashSet<u16> = HashSet::new();
+
+	let straight_intersections: HashSet<u16> = lines
+		.clone()
+		.filter(|line| line.is_straight)
+		.flat_map(|line| line.into_iter())
+		.filter(|point| straight_points.insert(*point))
+		.collect();
+	let straight_intersections = straight_intersections.len();
+
+	let mut all_points: HashSet<u16> = HashSet::new();
+
+	let all_intersections: HashSet<u16> = lines
+		.flat_map(|line| line.into_iter())
+		.filter(|point| all_points.insert(*point))
+		.collect();
+
+	let all_intersections = all_intersections.len();
 
 	Solution {
-		straight_intersections: map.straight_intersections.len(),
-		all_intersections: map.all_intersections.len(),
+		straight_intersections,
+		all_intersections,
 	}
 }
 

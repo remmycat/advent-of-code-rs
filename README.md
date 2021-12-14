@@ -10,7 +10,7 @@ Benchmarks on MacBook Pro (13-inch, 2019), 2.8 GHz Quad-Core Intel Core i7
 | 2021 – Day 02: Dive! | <code><sub>268.37 μs</sub> 276.63 μs <sub>284.59 μs</sub></code> |
 | 2021 – Day 03: Binary Diagnostic | <code><sub>1.3363 ms</sub> 1.3556 ms <sub>1.3754 ms</sub></code> |
 | 2021 – Day 04: Giant Squid | <code><sub>6.1415 ms</sub> 6.2460 ms <sub>6.3639 ms</sub></code> |
-| 2021 – Day 05: Hydrothermal Venture | <code><sub>8.9472 ms</sub> 9.1016 ms <sub>9.2517 ms</sub></code> |
+| 2021 – Day 05: Hydrothermal Venture | <code><sub>7.3454 ms</sub> 7.4697 ms <sub>7.6179 ms</sub></code> |
 | 2021 – Day 06: Lanternfish | <code><sub>4.8964 μs</sub> 4.9216 μs <sub>4.9488 μs</sub></code> |
 | 2021 – Day 07: The Treachery of Whales | <code><sub>3.2027 ms</sub> 3.2506 ms <sub>3.2982 ms</sub></code> |
 | 2021 – Day 08: Seven Segment Search | <code><sub>1.1879 ms</sub> 1.1999 ms <sub>1.2160 ms</sub></code> |
