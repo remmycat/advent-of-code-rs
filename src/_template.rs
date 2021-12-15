@@ -1,6 +1,6 @@
-struct Solution {}
+pub struct Solution {}
 
-fn solve(input: &str) -> Solution {
+pub fn solve(input: &str) -> Solution {
 	Solution {}
 }
 
@@ -11,15 +11,18 @@ mod tests {
 
 	#[test]
 	fn part_1_example_cases() {
+		// let input = fs::read_to_string("assets/20xx/input_xx_sample.txt").unwrap();
+
+		// assert_eq!(solve(&input).value, 0);
 		unimplemented!();
 	}
 
 	#[test]
 	fn part_1_solution() {
-		unimplemented!();
 		// let input = fs::read_to_string("assets/20xx/input_xx.txt").unwrap();
 
-		// assert_eq!(solve(input.trim()).value, something);
+		// assert_eq!(solve(&input).value, 0);
+		unimplemented!();
 	}
 
 	#[test]
@@ -30,8 +33,5 @@ mod tests {
 	#[test]
 	fn part_2_solution() {
 		unimplemented!();
-		// let input = fs::read_to_string("assets/20xx/input_xx.txt").unwrap();
-
-		// assert_eq!(solve(input.trim()).value, something);
 	}
 }

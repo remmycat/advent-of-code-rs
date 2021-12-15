@@ -74,6 +74,9 @@ pub fn y2021(c: &mut Criterion) {
 	group.bench_with_input("Day 14: Extended Polymerization", &input_14, |b, i| {
 		b.iter(|| d14::solve(i))
 	});
+
+	let input_15 = fs::read_to_string("assets/2021/input_15.txt").unwrap();
+	group.bench_with_input("Day 15: Chiton", &input_15, |b, i| b.iter(|| d15::solve(i)));
 }
 
 criterion_group! {
