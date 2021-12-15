@@ -19,4 +19,4 @@ Benchmarks on MacBook Pro (13-inch, 2019), 2.8 GHz Quad-Core Intel Core i7
 | 2021 – Day 11: Dumbo Octopμs | <code><sub>1.6699 ms</sub> 1.6921 ms <sub>1.7142 ms</sub></code> |
 | 2021 – Day 12: Passage Pathing | <code><sub>43.313 μs</sub> 43.796 μs <sub>44.341 μs</sub></code> |
 | 2021 – Day 13: Transparent Origami | <code><sub>151.52 μs</sub> 155.18 μs <sub>159.21 μs</sub></code> |
-| 2021 – Day 14: Extended Polymerization | <code><sub>707.78 ms</sub> 736.84 ms <sub>769.95 ms</sub></code> |
+| 2021 – Day 14: Extended Polymerization | <code><sub>29.759 μs</sub> 30.141 μs <sub>30.616 μs</sub></code> |

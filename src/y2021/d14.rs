@@ -1,39 +1,8 @@
-use std::iter::Peekable;
-
 use itertools::Itertools;
 
 pub struct Solution {
 	extreme_element_diff_10: usize,
 	extreme_element_diff_40: usize,
-}
-
-pub trait IdentifyLast: Iterator + Sized {
-	fn identify_last(self) -> Iter<Self>;
-}
-
-impl<I> IdentifyLast for I
-where
-	I: Iterator,
-{
-	fn identify_last(self) -> Iter<Self> {
-		Iter(self.peekable())
-	}
-}
-
-pub struct Iter<I>(Peekable<I>)
-where
-	I: Iterator;
-
-impl<I> Iterator for Iter<I>
-where
-	I: Iterator,
-{
-	type Item = (bool, I::Item);
-
-	#[inline]
-	fn next(&mut self) -> Option<Self::Item> {
-		self.0.next().map(|e| (self.0.peek().is_none(), e))
-	}
 }
 
 // convert uppercase ascii char to 0..25
@@ -42,88 +11,54 @@ fn get_char_code(c: char) -> u8 {
 	c as u8 - 65
 }
 
-#[inline]
-fn polymerization(
+fn polymerize(
+	atom_pair_count: &mut [[usize; 26]; 26],
 	insertion_map: &[[u8; 26]; 26],
-	count_memo: &mut [[Option<[usize; 26]>; 26]; 26],
-	element_collection: &mut [usize; 26],
-	goal_depth: u8,
-	depth: u8,
-	a: u8,
-	b: u8,
-) {
-	if depth == goal_depth {
-		// only count left side, right would otherwise be double-counted.
-		element_collection[a as usize] += 1;
-	} else {
-		let middle = insertion_map[a as usize][b as usize];
-
-		// let's memo at the half point
-		if depth == goal_depth / 2 {
-			if count_memo[a as usize][b as usize].is_none() {
-				// Okay, gonna have to memoize our result for the next person
-				let mut memo_collection = [0; 26];
-				polymerization(
-					insertion_map,
-					count_memo,
-					&mut memo_collection,
-					goal_depth,
-					depth + 1,
-					a,
-					middle,
-				);
-				polymerization(
-					insertion_map,
-					count_memo,
-					&mut memo_collection,
-					goal_depth,
-					depth + 1,
-					middle,
-					b,
-				);
-				for (index, count) in memo_collection.iter().enumerate() {
-					element_collection[index] += count;
-				}
-				count_memo[a as usize][b as usize] = Some(memo_collection);
-			} else {
-				let memoized_counts = count_memo[a as usize][b as usize].unwrap();
-
-				for (index, count) in memoized_counts.iter().enumerate() {
-					element_collection[index] += count;
+	last_char: usize,
+	steps: usize,
+) -> Vec<usize> {
+	for _step in 1..=steps {
+		let mut step_count = [[0_usize; 26]; 26];
+		for a in 0..26 {
+			for b in 0..26 {
+				let count = atom_pair_count[a][b];
+				if count != 0 {
+					let mid = insertion_map[a][b] as usize;
+					step_count[a][mid] += count;
+					step_count[mid][b] += count;
 				}
 			}
-		} else {
-			polymerization(
-				insertion_map,
-				count_memo,
-				element_collection,
-				goal_depth,
-				depth + 1,
-				a,
-				middle,
-			);
-			polymerization(
-				insertion_map,
-				count_memo,
-				element_collection,
-				goal_depth,
-				depth + 1,
-				middle,
-				b,
-			);
+		}
+		for a in 0..26 {
+			for b in 0..26 {
+				atom_pair_count[a][b] = step_count[a][b];
+			}
 		}
 	}
+
+	atom_pair_count
+		.iter()
+		.enumerate()
+		.map(|(a, b_map)| -> usize {
+			let a_count = b_map.iter().sum();
+			if a == last_char {
+				// correction for only counting the left sides of the result
+				a_count + 1
+			} else {
+				a_count
+			}
+		})
+		.filter(|count| *count > 0)
+		.collect()
 }
 
 pub fn solve(input: &str) -> Solution {
+	let mut input_parts = input.split("\n\n");
+	let atoms = input_parts.next().unwrap();
+	let insertions = input_parts.next().unwrap();
+
 	let mut insertion_map = [[0_u8; 26]; 26];
-
-	let mut count_memo = [[None; 26]; 26];
-
-	let mut parts = input.split("\n\n");
-
-	let atoms = parts.next().unwrap();
-	let insertions = parts.next().unwrap();
+	let mut atom_pair_count = [[0_usize; 26]; 26];
 
 	for line in insertions.lines() {
 		let mut chars = line.chars();
@@ -137,59 +72,18 @@ pub fn solve(input: &str) -> Solution {
 		insertion_map[a as usize][b as usize] = middle;
 	}
 
-	let inital_atom_tuples: Vec<(u8, u8)> =
-		atoms.chars().map(get_char_code).tuple_windows().collect();
-	let last_char = inital_atom_tuples.last().unwrap().1;
+	let inital_atom_pairs: Vec<(_, _)> = atoms.chars().map(get_char_code).tuple_windows().collect();
+	let last_char = inital_atom_pairs.last().unwrap().1 as usize;
 
-	let mut element_collection_10 = [0_usize; 26];
-
-	// correction for only counting the left sides of the result
-	element_collection_10[last_char as usize] = 1;
-
-	for (a, b) in inital_atom_tuples.clone() {
-		polymerization(
-			&insertion_map,
-			&mut count_memo,
-			&mut element_collection_10,
-			10,
-			0,
-			a,
-			b,
-		);
+	for (a, b) in inital_atom_pairs.clone() {
+		atom_pair_count[a as usize][b as usize] += 1;
 	}
 
-	let extreme_element_diff_10 = element_collection_10.iter().max().unwrap()
-		- element_collection_10
-			.into_iter()
-			.filter(|count| *count != 0)
-			.min()
-			.unwrap();
-
-	count_memo = [[None; 26]; 26];
-
-	let mut element_collection_40 = [0_usize; 26];
-
-	// correction for only counting the left sides of the result
-	element_collection_40[last_char as usize] = 1;
-
-	for (a, b) in inital_atom_tuples {
-		polymerization(
-			&insertion_map,
-			&mut count_memo,
-			&mut element_collection_40,
-			40,
-			0,
-			a,
-			b,
-		);
-	}
-
-	let extreme_element_diff_40 = element_collection_40.iter().max().unwrap()
-		- element_collection_40
-			.into_iter()
-			.filter(|count| *count != 0)
-			.min()
-			.unwrap();
+	let counts_10 = polymerize(&mut atom_pair_count, &insertion_map, last_char, 10);
+	let extreme_element_diff_10 = counts_10.iter().max().unwrap() - counts_10.iter().min().unwrap();
+	// We already counted 10 steps into "atom_pair_count", no need to reset & recount.
+	let counts_40 = polymerize(&mut atom_pair_count, &insertion_map, last_char, 40 - 10);
+	let extreme_element_diff_40 = counts_40.iter().max().unwrap() - counts_40.iter().min().unwrap();
 
 	Solution {
 		extreme_element_diff_10,
@@ -227,6 +121,6 @@ mod tests {
 	fn part_2_solution() {
 		let input = fs::read_to_string("assets/2021/input_14.txt").unwrap();
 
-		assert_eq!(solve(&input).extreme_element_diff_40, 0);
+		assert_eq!(solve(&input).extreme_element_diff_40, 4371307836157);
 	}
 }
