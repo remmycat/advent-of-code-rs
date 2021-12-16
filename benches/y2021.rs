@@ -77,6 +77,11 @@ pub fn y2021(c: &mut Criterion) {
 
 	let input_15 = fs::read_to_string("assets/2021/input_15.txt").unwrap();
 	group.bench_with_input("Day 15: Chiton", &input_15, |b, i| b.iter(|| d15::solve(i)));
+
+	let input_16 = fs::read_to_string("assets/2021/input_16.txt").unwrap();
+	group.bench_with_input("Day 16: Packet Decoder", &input_16, |b, i| {
+		b.iter(|| d16::solve(i))
+	});
 }
 
 criterion_group! {

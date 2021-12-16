@@ -32,7 +32,7 @@ fn get_chiton_board_score(path: &PathTry, end: usize, x_size: usize) -> usize {
 	let end_dist = end_x - path_x + end_y - path_y;
 	// Distance is quadratic so paths have a higher incentive to get to the end.
 	// Also it's a 2d map, so quadratic distance felt fitting. I have no idea.
-	path.total_score + end_dis * end_dist
+	path.total_score + end_dist * end_dist
 }
 
 fn chiton_approval_board(
