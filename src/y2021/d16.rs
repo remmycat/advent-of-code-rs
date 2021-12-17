@@ -7,14 +7,14 @@ pub struct Solution {
 
 struct BitStream {
 	bytes_stack: Vec<u8>,
-	rest_bits: Vec<bool>,
+	byte_index: u8, //0..7 (getting to 8 resets to 0)
 }
 
 impl BitStream {
 	fn new(bytes: Vec<u8>) -> Self {
 		BitStream {
 			bytes_stack: bytes.into_iter().rev().collect(),
-			rest_bits: Vec::new(),
+			byte_index: 0,
 		}
 	}
 
@@ -39,31 +39,34 @@ impl BitStream {
 	}
 
 	fn len(&self) -> usize {
-		self.bytes_stack.len() * 8 + self.rest_bits.len()
+		self.bytes_stack.len() * 8 - self.byte_index as usize
 	}
 
-	// this could be optimized to take whole bytes directly from the stack if possible for the bit_amt
 	fn read(&mut self, bit_amt: u8) -> u32 {
-		if bit_amt > 32 {
-			panic!("Cannot take more than 32 bits at a time")
-		}
+		debug_assert!(bit_amt <= 32);
+		debug_assert!(bit_amt as usize <= self.len());
 
-		if self.len() < bit_amt.into() {
-			panic!("Tried to take more bits than available")
-		};
+		let mut acc: u32 = 0;
+		let mut bits_missing_amt = bit_amt;
 
-		let mut acc = 0;
+		while bits_missing_amt > 0 {
+			let old_byte_index = self.byte_index;
+			let bits_left_on_top = 8 - old_byte_index;
+			let (top_byte, take_amt) = if bits_missing_amt >= bits_left_on_top {
+				self.byte_index = 0;
+				(self.bytes_stack.pop().unwrap(), bits_left_on_top)
+			} else {
+				self.byte_index += bits_missing_amt;
+				(*self.bytes_stack.last().unwrap(), bits_missing_amt)
+			};
 
-		for _ in 0..bit_amt {
-			if self.rest_bits.is_empty() {
-				let next_byte = self.bytes_stack.pop().unwrap();
-				for i in 0..8 {
-					// first in, last out
-					self.rest_bits.push(next_byte & (1 << i) != 0)
-				}
-			}
+			// first, shave off "already taken" bits
+			let shaved_bits = top_byte << old_byte_index;
+			// next, shift it back the same amount (to left-pad 0s) and one additional step for every bit we _don't_ want to take.
+			let bits = shaved_bits >> (old_byte_index + bits_left_on_top - take_amt);
 
-			acc = (acc << 1) | (self.rest_bits.pop().unwrap() as u32)
+			acc = (acc << take_amt) | bits as u32;
+			bits_missing_amt -= take_amt;
 		}
 
 		acc
