@@ -22,3 +22,4 @@ Benchmarks on MacBook Pro (13-inch, 2019), 2.8 GHz Quad-Core Intel Core i7
 | 2021 – Day 14: Extended Polymerization | <code><sub>29.759 μs</sub> 30.141 μs <sub>30.616 μs</sub></code> | 😎 |
 | 2021 – Day 15: Chiton | <code><sub>1.8263 s&nbsp;</sub> 1.8867 s&nbsp; <sub>1.9524 s&nbsp;</sub></code> | 😭 |
 | 2021 – Day 16: Packet Decoder | <code><sub>35.102 μs</sub> 35.242 μs <sub>35.401 μs</sub></code> | 😎 |
+| 2021 – Day 17: Trick Shot | <code><sub>11.046 μs</sub> 11.143 μs <sub>11.269 μs</sub></code> | 😎 |

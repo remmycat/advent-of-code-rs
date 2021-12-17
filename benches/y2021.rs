@@ -82,6 +82,11 @@ pub fn y2021(c: &mut Criterion) {
 	group.bench_with_input("Day 16: Packet Decoder", &input_16, |b, i| {
 		b.iter(|| d16::solve(i))
 	});
+
+	let input_17 = fs::read_to_string("assets/2021/input_17.txt").unwrap();
+	group.bench_with_input("Day 17: Trick Shot", &input_17, |b, i| {
+		b.iter(|| d17::solve(i))
+	});
 }
 
 criterion_group! {
