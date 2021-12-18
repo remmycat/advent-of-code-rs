@@ -4,8 +4,8 @@ Benchmarks on MacBook Pro (13-inch, 2019), 2.8 GHz Quad-Core Intel Core i7
 
 (Day 12, yikes…)
 
-| Puzzle | Time <code><sub>low</sub> mean <sub>high</sub></code> | ❓ |
-| :-- | --- | --- |
+| Puzzle | Time<br><code><sub>Lower bound</sub> Estimate <sub>Upper bound</sub></code> | ❓ |
+| :-- | :-: | :-: |
 | 2021 – Day 01: Sonar Sweep | <code><sub>82.352 μs</sub> 82.675 μs <sub>83.038 μs</sub></code> | 😎 |
 | 2021 – Day 02: Dive! | <code><sub>268.37 μs</sub> 276.63 μs <sub>284.59 μs</sub></code> | 😎 |
 | 2021 – Day 03: Binary Diagnostic | <code><sub>1.3363 ms</sub> 1.3556 ms <sub>1.3754 ms</sub></code> | 🤨 |
@@ -23,3 +23,4 @@ Benchmarks on MacBook Pro (13-inch, 2019), 2.8 GHz Quad-Core Intel Core i7
 | 2021 – Day 15: Chiton | <code><sub>1.8263 s&nbsp;</sub> 1.8867 s&nbsp; <sub>1.9524 s&nbsp;</sub></code> | 😭 |
 | 2021 – Day 16: Packet Decoder | <code><sub>35.102 μs</sub> 35.242 μs <sub>35.401 μs</sub></code> | 😎 |
 | 2021 – Day 17: Trick Shot | <code><sub>11.046 μs</sub> 11.143 μs <sub>11.269 μs</sub></code> | 😎 |
+| 2021 – Day 18: Snailfish | <code><sub>40.403 ms</sub> 40.808 ms <sub>41.247 ms</sub></code> | ☹️ |
