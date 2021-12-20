@@ -97,6 +97,11 @@ pub fn y2021(c: &mut Criterion) {
 	group.bench_with_input("Day 19: Beacon Scanner", &input_19, |b, i| {
 		b.iter(|| d19::solve(i))
 	});
+
+	let input_20 = fs::read_to_string("assets/2021/input_20.txt").unwrap();
+	group.bench_with_input("Day 20: Trench Map", &input_20, |b, i| {
+		b.iter(|| d20::solve(i))
+	});
 }
 
 criterion_group! {
