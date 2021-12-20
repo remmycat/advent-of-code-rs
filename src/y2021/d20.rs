@@ -1,5 +1,7 @@
 use std::collections::VecDeque;
 
+use itertools::Itertools;
+
 pub struct Solution {
 	lit_pixels_2: usize,
 	lit_pixels_50: usize,
@@ -7,7 +9,6 @@ pub struct Solution {
 
 type Pixels = VecDeque<VecDeque<bool>>;
 
-#[derive(Clone)]
 struct Image {
 	pixels: Pixels,
 	width: usize,
@@ -27,21 +28,7 @@ impl Image {
 		println!();
 	}
 
-	// #[inline(never)]
-	fn get_pixel_sum(&self, x: usize, y: usize) -> usize {
-		let Self { pixels, .. } = self;
-
-		let top_row = &pixels[y - 1];
-		let mid_row = &pixels[y];
-		let bot_row = &pixels[y + 1];
-
-		(take_3_around(top_row, x) << 6)
-			| (take_3_around(mid_row, x) << 3)
-			| take_3_around(bot_row, x)
-	}
-
-	// #[inline(never)]
-	fn pad_twice(&mut self, fill: bool) {
+	fn double_pad(&mut self, fill: bool) {
 		self.pixels.iter_mut().for_each(|row| {
 			row.push_front(fill);
 			row.push_front(fill);
@@ -60,30 +47,40 @@ impl Image {
 	}
 
 	fn enhance(&mut self, pixel_lookup: &[bool], fill: bool) {
-		self.pad_twice(fill);
+		self.double_pad(fill);
 
-		let mut new_pixels = Vec::new();
+		let new_height = self.height - 2;
+		let new_width = self.width - 2;
 
-		for y in 1..=(self.height - 2) {
-			let mut new_row = Vec::new();
-			for x in 1..=(self.width - 2) {
-				//let is_center = y == self.width / 2 && x == self.width / 2;
-				let pixel_sum = self.get_pixel_sum(x, y);
-				new_row.push(pixel_lookup[pixel_sum]);
-				// let px_insert = pixel_lookup[pixel_sum];
-				// // print!("{}", if px_insert > 0 { '#' } else { '.' });
-				// new_row |= (px_insert as u128) << (self.width - 2 - x);
-			}
-			// println!();
-			new_pixels.push(VecDeque::from(new_row));
-		}
-		//
+		self.pixels = self.pixels.iter().tuple_windows::<(_, _, _)>().fold(
+			VecDeque::with_capacity(new_height),
+			|mut px_acc, (top, mid, bot)| {
+				let mut new_mid = VecDeque::with_capacity(new_width);
 
-		*self = Self {
-			width: self.width - 2,
-			height: self.height - 2,
-			pixels: VecDeque::from(new_pixels),
-		};
+				for x in 1..=new_width {
+					let p1 = (top[x - 1] as usize) << 8;
+					let p2 = (top[x] as usize) << 7;
+					let p3 = (top[x + 1] as usize) << 6;
+					let p4 = (mid[x - 1] as usize) << 5;
+					let p5 = (mid[x] as usize) << 4;
+					let p6 = (mid[x + 1] as usize) << 3;
+					let p7 = (bot[x - 1] as usize) << 2;
+					let p8 = (bot[x] as usize) << 1;
+					let p9 = bot[x + 1] as usize;
+
+					let pixel_sum = p1 | p2 | p3 | p4 | p5 | p6 | p7 | p8 | p9;
+
+					new_mid.push_back(pixel_lookup[pixel_sum]);
+				}
+
+				px_acc.push_back(new_mid);
+
+				px_acc
+			},
+		);
+
+		self.width = new_width;
+		self.height = new_height;
 
 		assert_eq!(self.pixels.len(), self.height);
 	}
@@ -95,126 +92,6 @@ impl Image {
 			.sum()
 	}
 }
-
-// #[inline(never)]
-fn take_3_around(deque: &VecDeque<bool>, x: usize) -> usize {
-	((*deque.get(x - 1).unwrap() as usize) << 2)
-		| ((*deque.get(x).unwrap() as usize) << 1)
-		| (*deque.get(x + 1).unwrap() as usize)
-}
-
-// fn get_pixel_sum(image: &Image, x: usize, y: usize) -> usize {
-// 	let Image { pixels, .. } = image;
-
-// 	let top_row = &pixels[y - 1];
-// 	let mid_row = &pixels[y];
-// 	let bot_row = &pixels[y + 1];
-
-// 	// ppppppppppp_lllllllllll_ttt_rrrrrrrrrr
-// 	// p + l + t + r = 128;
-// 	//     l + t + r = width
-// 	// p             = 128 - width
-// 	//         t     = 3
-// 	//     l + t     = x + 1 + 1
-// 	//     l         = (l + t) - t    = (x + 2) - 1    = x - 1
-// 	// p + l         = (128 - width) + (x - 1)
-
-// 	// let start_index = x - 1;
-// 	// let end_index = x + 1;
-
-// 	// let up_3 = (*up_row.get(x-1).unwrap() as u8 << 2) | *up_row.get(x-1).unwrap()
-
-// 	// //let up_3 = (((up_row << (128 - width + x - 1)) >> (128 - 3)) as usize) << 6;
-// 	// let mid_3 = (((mid_row << (128 - width + x - 1)) >> (128 - 3)) as usize) << 3;
-// 	// let down_3 = ((down_row << (128 - width + x - 1)) >> (128 - 3)) as usize;
-
-// 	// if debug {
-// 	// 	println!();
-// 	// 	println!();
-// 	// 	println!("{:0>9b}", up_3);
-// 	// 	println!("{:0>9b}", mid_3);
-// 	// 	println!("{:0>9b}", down_3);
-// 	// 	println!();
-// 	// }
-
-// 	(take_3_around(top_row, x) << 6) | (take_3_around(mid_row, x) << 3) | take_3_around(bot_row, x)
-// }
-
-// fn print_binary(image: &Image, prompt: String) {
-// 	println!("{}:", prompt);
-// 	println!();
-// 	for row in image.pixels.iter() {
-// 		for px in row {
-// 			print!("{}", if *px { '#' } else { '.' })
-// 		}
-// 		println!();
-// 	}
-// 	println!();
-// }
-
-// fn pad_twice(image: &mut Image, fill: bool) {
-// 	assert!(image.width < 124 && image.height < 124);
-
-// 	image.pixels.iter_mut().for_each(|row| {
-// 		row.push_front(fill);
-// 		row.push_front(fill);
-// 		row.push_back(fill);
-// 		row.push_back(fill);
-// 	});
-// 	image.width += 4;
-
-// 	let full_row_padding = VecDeque::from(vec![fill; image.width]);
-// 	image.pixels.push_front(full_row_padding.to_owned());
-// 	image.pixels.push_front(full_row_padding.to_owned());
-// 	image.pixels.push_back(full_row_padding.to_owned());
-// 	image.pixels.push_back(full_row_padding);
-
-// 	image.height += 4;
-
-// 	assert_eq!(image.pixels.len(), image.height);
-// }
-
-// fn enhance(pixel_lookup: &[bool], image: &mut Image, fill: bool) {
-// 	// print_binary(
-// 	// 	image,
-// 	// 	format!("\nold before padding ({}x{})", image.width, image.height),
-// 	// );
-
-// 	pad_twice(image, fill);
-
-// 	print_binary(
-// 		image,
-// 		format!("\nold after padding ({}x{})", image.width, image.height),
-// 	);
-
-// 	let mut new_pixels = Vec::new();
-
-// 	for y in 1..=(image.height - 2) {
-// 		let mut new_row = Vec::new();
-// 		for x in 1..=(image.width - 2) {
-// 			//let is_center = y == image.width / 2 && x == image.width / 2;
-// 			let pixel_sum = get_pixel_sum(image, x, y);
-// 			new_row.push(pixel_lookup[pixel_sum]);
-// 			// let px_insert = pixel_lookup[pixel_sum];
-// 			// // print!("{}", if px_insert > 0 { '#' } else { '.' });
-// 			// new_row |= (px_insert as u128) << (image.width - 2 - x);
-// 		}
-// 		// println!();
-// 		new_pixels.push(VecDeque::from(new_row));
-// 	}
-// 	//
-
-// 	*image = Image {
-// 		width: image.width - 2,
-// 		height: image.height - 2,
-// 		pixels: VecDeque::from(new_pixels),
-// 	};
-// 	print_binary(
-// 		image,
-// 		format!("\nafter enhance ({}x{})", image.width, image.height),
-// 	);
-// 	assert_eq!(image.pixels.len(), image.height);
-// }
 
 pub fn solve(input: &str) -> Solution {
 	let (lookup, start_pixels) = input.split_once("\n\n").unwrap();
@@ -232,8 +109,6 @@ pub fn solve(input: &str) -> Solution {
 		})
 		.collect();
 
-	// println!("\nstart {:#?}", start_pixels);
-
 	let mut image = Image {
 		height: start_pixels.len(),
 		pixels: start_pixels,
@@ -245,15 +120,12 @@ pub fn solve(input: &str) -> Solution {
 
 	let lit_pixels_2 = image.lit_pixels();
 
-	// image.print("After 2".to_string());
-
 	for i in 1..=48 {
 		let void = if i % 2 == 0 { even_void } else { odd_void };
 		image.enhance(&lookup, void);
 	}
 
 	let lit_pixels_50 = image.lit_pixels();
-	// image.print("After 50".to_string());
 
 	Solution {
 		lit_pixels_2,
