@@ -2,7 +2,7 @@
 
 Benchmarks on MacBook Pro (13-inch, 2019), 2.8 GHz Quad-Core Intel Core i7
 
-(Day 12, yikes…)
+(Day 15 and 19, yikes…)
 
 | Puzzle | Time<br><code><sub>Lower bound</sub> Estimate <sub>Upper bound</sub></code> | ❓ |
 | :-- | :-: | :-: |
@@ -24,3 +24,4 @@ Benchmarks on MacBook Pro (13-inch, 2019), 2.8 GHz Quad-Core Intel Core i7
 | 2021 – Day 16: Packet Decoder | <code><sub>35.102 μs</sub> 35.242 μs <sub>35.401 μs</sub></code> | 😎 |
 | 2021 – Day 17: Trick Shot | <code><sub>11.046 μs</sub> 11.143 μs <sub>11.269 μs</sub></code> | 😎 |
 | 2021 – Day 18: Snailfish | <code><sub>40.403 ms</sub> 40.808 ms <sub>41.247 ms</sub></code> | ☹️ |
+| 2021 – Day 19: Beacon Scanner | <code><sub>4.4191 s&nbsp;</sub> 4.4864 s&nbsp; <sub>4.5551 s&nbsp;</sub></code> | 😭 |
