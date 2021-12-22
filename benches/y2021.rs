@@ -102,6 +102,11 @@ pub fn y2021(c: &mut Criterion) {
 	group.bench_with_input("Day 20: Trench Map", &input_20, |b, i| {
 		b.iter(|| d20::solve(i))
 	});
+
+	let input_21 = fs::read_to_string("assets/2021/input_21.txt").unwrap();
+	group.bench_with_input("Day 21: Dirac Dice", &input_21, |b, i| {
+		b.iter(|| d21::solve(i))
+	});
 }
 
 criterion_group! {

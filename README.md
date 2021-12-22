@@ -27,4 +27,5 @@ Emojis reflect my feeling on the time and if it's improvable, based on intuition
 | 2021 – Day 17: Trick Shot | <code><sub>11.046 μs</sub> 11.143 μs <sub>11.269 μs</sub></code> | 😎 |
 | 2021 – Day 18: Snailfish | <code><sub>40.403 ms</sub> 40.808 ms <sub>41.247 ms</sub></code> | 🤨 |
 | 2021 – Day 19: Beacon Scanner | <code><sub>4.4191 s&nbsp;</sub> 4.4864 s&nbsp; <sub>4.5551 s&nbsp;</sub></code> | 😭 |
-| 2021 – Day 18: Trench Map | <code><sub>10.085 ms</sub> 10.165 ms <sub>10.252 ms</sub></code> | 😎 | (relative)
+| 2021 – Day 20: Trench Map | <code><sub>10.085 ms</sub> 10.165 ms <sub>10.252 ms</sub></code> | 😎 |
+| 2021 – Day 21: Dirac Dice | <code><sub>4.0620 ms</sub> 4.1312 ms <sub>4.2120 ms</sub></code> | 🤨 |
