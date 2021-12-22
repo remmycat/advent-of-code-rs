@@ -2,7 +2,7 @@ use std::{ops::RangeInclusive, str::FromStr};
 
 use anyhow::{bail, Error};
 
-struct Solution {
+pub struct Solution {
 	lights_on: u32,
 	allover_brightness: u32,
 }
@@ -34,8 +34,6 @@ struct Instruction {
 	task: Task,
 	x_range: RangeInclusive<u16>,
 	y_range: RangeInclusive<u16>,
-	y_applies: bool,
-	next: Option<Box<Instruction>>,
 }
 
 impl FromStr for Instruction {
@@ -56,77 +54,44 @@ impl FromStr for Instruction {
 			task,
 			x_range: start.x..=end.x,
 			y_range: start.y..=end.y,
-			y_applies: true,
-			next: None,
 		})
 	}
-}
-
-struct Light {
-	x: u16,
-	is_on: bool,
-	brightness: u16,
 }
 
 impl Instruction {
-	fn set_y(&mut self, y: &u16) {
-		self.y_applies = self.y_range.contains(y);
-
-		if self.next.is_some() {
-			self.next.as_mut().unwrap().set_y(y);
-		}
-	}
-
-	fn execute(&self, mut light: Light) -> Light {
-		let applies = self.y_applies && self.x_range.contains(&light.x);
-
-		if applies {
-			match self.task {
-				Task::TurnOn => {
-					light.is_on = true;
-					light.brightness += 1;
-				}
-				Task::TurnOff => {
-					light.is_on = false;
-					light.brightness = light.brightness.max(1) - 1;
-				}
-				Task::Toggle => {
-					light.is_on = !light.is_on;
-					light.brightness += 2;
-				}
-			}
-		}
-		if self.next.is_some() {
-			self.next.as_ref().unwrap().execute(light)
-		} else {
+	fn execute(&self, x: &u16, light: (bool, u16)) -> (bool, u16) {
+		if !self.x_range.contains(x) {
 			light
+		} else {
+			let (is_on, brightness) = light;
+			match self.task {
+				Task::TurnOn => (true, brightness + 1),
+				Task::TurnOff => (false, brightness.max(1) - 1),
+				Task::Toggle => (!is_on, brightness + 2),
+			}
 		}
 	}
 }
 
-fn solve(input: &str) -> Solution {
-	let mut compiled_instructions = input
+pub fn solve(input: &str) -> Solution {
+	let instructions: Vec<_> = input
 		.lines()
 		.map(|line| line.parse::<Instruction>().unwrap())
-		.rfold(None, |next, mut ins| {
-			ins.next = next;
-			Some(Box::new(ins))
-		})
-		.unwrap();
+		.collect();
 
 	let mut lights_on = 0;
 	let mut allover_brightness = 0;
 
 	for y in 0..=999 {
-		compiled_instructions.set_y(&y);
+		let y_instructions: Vec<_> = instructions
+			.iter()
+			.filter(|ins| ins.y_range.contains(&y))
+			.collect();
+
 		for x in 0..=999 {
-			let Light {
-				is_on, brightness, ..
-			} = compiled_instructions.execute(Light {
-				x,
-				is_on: false,
-				brightness: 0,
-			});
+			let (is_on, brightness) = y_instructions
+				.iter()
+				.fold((false, 0), |light, ins| ins.execute(&x, light));
 
 			lights_on += is_on as u32;
 			allover_brightness += brightness as u32;
