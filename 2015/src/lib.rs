@@ -1,3 +1,6 @@
+#![allow(dead_code)]
+#![warn(clippy::disallowed_types)]
+
 pub mod d01;
 pub mod d02;
 pub mod d03;
