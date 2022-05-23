@@ -64,9 +64,7 @@ where
 			break;
 		}
 
-		let bit_sum = diagnostics
-			.to_owned()
-			.into_iter()
+		let bit_sum = diagnostics.iter().cloned()
 			.fold(0_i128, |sum, Diagnostic(dia)| sum + dia[bit]);
 
 		let comparison_bit = predicate_get_comparison_bit(leftover_len, bit_sum);

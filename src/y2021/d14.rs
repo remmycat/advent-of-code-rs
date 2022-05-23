@@ -75,7 +75,7 @@ pub fn solve(input: &str) -> Solution {
 	let inital_atom_pairs: Vec<(_, _)> = atoms.chars().map(get_char_code).tuple_windows().collect();
 	let last_char = inital_atom_pairs.last().unwrap().1 as usize;
 
-	for (a, b) in inital_atom_pairs.clone() {
+	for (a, b) in inital_atom_pairs {
 		atom_pair_count[a as usize][b as usize] += 1;
 	}
 

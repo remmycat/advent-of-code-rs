@@ -173,7 +173,7 @@ pub fn solve(input: &str) -> Solution {
 	let mut scanners: Vec<_> = input
 		.split("\n\n")
 		.map(|scanner| -> Vec<_> {
-			let (_, points) = scanner.split_once("\n").unwrap();
+			let (_, points) = scanner.split_once('\n').unwrap();
 			points
 				.lines()
 				.map(|line| {
