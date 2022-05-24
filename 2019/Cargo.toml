@@ -1,5 +1,7 @@
 [workspace]
 
 members = [
-    "day-01-the-tyranny-of-the-rocket-equation"
+    "intcode",
+    "day-01-the-tyranny-of-the-rocket-equation",
+    "day-02-1202-program-alarm"
 ]
