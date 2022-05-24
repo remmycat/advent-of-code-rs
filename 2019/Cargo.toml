@@ -3,5 +3,6 @@
 members = [
     "intcode",
     "day-01-the-tyranny-of-the-rocket-equation",
-    "day-02-1202-program-alarm"
+    "day-02-1202-program-alarm",
+    "day-05-sunny-with-a-chance-of-asteroids"
 ]

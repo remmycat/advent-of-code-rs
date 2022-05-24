@@ -14,6 +14,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "aoc-2019-05"
+version = "1.0.0"
+dependencies = [
+ "intcode",
+]
+
+[[package]]
 name = "intcode"
 version = "1.0.0"
 dependencies = [

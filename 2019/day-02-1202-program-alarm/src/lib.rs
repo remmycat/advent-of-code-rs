@@ -1,33 +1,33 @@
 use std::str::FromStr;
 
-use intcode::{IntCodeError, IntCodeProgram};
+use intcode::{operation::ParameterMode, IntCodeError, IntCodeProgram};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Params {
-	noun: usize,
-	verb: usize,
+	noun: isize,
+	verb: isize,
 }
 
 pub struct Solution {
-	pub output_1202: usize,
+	pub output_1202: isize,
 	pub secret_params: Params,
 }
 
 const PARAMS_1202: Params = Params { noun: 12, verb: 2 };
 
-const REVERSE_RESULT: usize = 19690720;
+const REVERSE_RESULT: isize = 19690720;
 
-fn run_program(program: &mut IntCodeProgram, params: Params) -> Result<usize, IntCodeError> {
+fn run_program(program: &mut IntCodeProgram, params: Params) -> Result<isize, IntCodeError> {
 	program.reset();
 
 	program.write(1, params.noun)?;
 	program.write(2, params.verb)?;
-	program.run()?;
+	program.run(&[])?;
 
-	program.read(0)
+	program.read(0, ParameterMode::Immediate)?.value()
 }
 
-fn backsolve(program: &mut IntCodeProgram, wanted_result: usize) -> Result<Params, IntCodeError> {
+fn backsolve(program: &mut IntCodeProgram, wanted_result: isize) -> Result<Params, IntCodeError> {
 	for noun in 0..=99 {
 		for verb in 0..=99 {
 			let params = Params { noun, verb };
