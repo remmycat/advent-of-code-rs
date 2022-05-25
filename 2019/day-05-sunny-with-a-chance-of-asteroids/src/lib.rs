@@ -11,33 +11,27 @@ const AC_UNIT_ID: isize = 1;
 const THERMAL_RADIATOR_ID: isize = 5;
 
 pub fn solve(input: &str) -> Result<Solution, IntCodeError> {
-	let mut program = IntCodeProgram::from_str(input)?;
+	let program = IntCodeProgram::from_str(input)?;
 
-	let outputs_ac = program.run(&[AC_UNIT_ID])?;
+	let mut ac_outputs = program.clone().inputs(vec![AC_UNIT_ID]).run()?;
 
-	for (i, output) in outputs_ac.iter().enumerate() {
-		if i < outputs_ac.len() - 1 {
-			assert_eq!(*output, 0);
-		}
-	}
-
-	let ac_diagnostic = *outputs_ac
-		.last()
+	let ac_diagnostic = ac_outputs
+		.pop()
 		.expect("expected to have at least one output");
 
-	program.reset();
-
-	let outputs_tr = program.run(&[THERMAL_RADIATOR_ID])?;
-
-	for (i, output) in outputs_tr.iter().enumerate() {
-		if i < outputs_tr.len() - 1 {
-			assert_eq!(*output, 0);
-		}
+	for other_output in ac_outputs {
+		assert_eq!(other_output, 0);
 	}
 
-	let tr_diagnostic = *outputs_tr
-		.last()
+	let mut tr_outputs = program.inputs(vec![THERMAL_RADIATOR_ID]).run()?;
+
+	let tr_diagnostic = tr_outputs
+		.pop()
 		.expect("expected to have at least one output");
+
+	for other_output in tr_outputs {
+		assert_eq!(other_output, 0);
+	}
 
 	Ok(Solution {
 		ac_diagnostic,

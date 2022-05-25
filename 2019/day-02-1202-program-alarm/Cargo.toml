@@ -6,3 +6,4 @@ license = "MIT"
 
 [dependencies]
 intcode = { path = "../intcode" }
+fallible-iterator = "0.2"

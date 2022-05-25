@@ -1,9 +1,10 @@
 [package]
-name = "intcode"
+name = "aoc-2019-07"
 version = "1.0.0"
 edition = "2021"
 license = "MIT"
 
 [dependencies]
-thiserror = "1.0"
+intcode = { path = "../intcode" }
+itertools = "0.10"
 fallible-iterator = "0.2"

@@ -10,6 +10,7 @@ version = "1.0.0"
 name = "aoc-2019-02"
 version = "1.0.0"
 dependencies = [
+ "fallible-iterator",
  "intcode",
 ]
 
@@ -21,10 +22,41 @@ dependencies = [
 ]
 
 [[package]]
+name = "aoc-2019-07"
+version = "1.0.0"
+dependencies = [
+ "fallible-iterator",
+ "intcode",
+ "itertools",
+]
+
+[[package]]
+name = "either"
+version = "1.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
+
+[[package]]
+name = "fallible-iterator"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4443176a9f2c162692bd3d352d745ef9413eec5782a80d8fd6f8a1ac692a07f7"
+
+[[package]]
 name = "intcode"
 version = "1.0.0"
 dependencies = [
+ "fallible-iterator",
  "thiserror",
+]
+
+[[package]]
+name = "itertools"
+version = "0.10.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a9a9d19fa1e79b6215ff29b9d6880b706147f16e9b1dbb1e4e5947b5b02bc5e3"
+dependencies = [
+ "either",
 ]
 
 [[package]]
