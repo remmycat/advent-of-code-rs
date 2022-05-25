@@ -24,7 +24,7 @@ fn run_program(program: IntCodeProgram, params: Params) -> Result<isize, IntCode
 		.patch(2, params.verb)?
 		.into_fallible_iter();
 
-	assert_eq!(patched.next()?, None);
+	assert_eq!(patched.next()?, None, "This program does not have outputs");
 
 	patched.read(0, ParameterMode::Immediate)?.value()
 }

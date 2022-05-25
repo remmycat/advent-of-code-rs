@@ -22,7 +22,9 @@ fn get_thruster_signal(
 			.inputs(vec![phase, signal])
 			.into_fallible_iter();
 
-		signal = iter.next()?.expect("expected at least one output per amp");
+		signal = iter
+			.next()?
+			.expect("Each amp is said to have at least one output");
 
 		programs.push(iter);
 	}
@@ -34,15 +36,21 @@ fn get_thruster_signal(
 			if let Some(out) = programs[i].next()? {
 				signal = out;
 			} else {
-				// We expect this to happen for the first amp first.
-				assert_eq!(i, 0);
+				assert_eq!(
+					i, 0,
+					"The first amp is said to be the first one that has its program halting"
+				);
 				break;
 			}
 		}
 	}
 
 	for mut program in programs {
-		assert_eq!(program.next()?, None)
+		assert_eq!(
+			program.next()?,
+			None,
+			"All amps should have halted at this point"
+		)
 	}
 
 	Ok(signal)

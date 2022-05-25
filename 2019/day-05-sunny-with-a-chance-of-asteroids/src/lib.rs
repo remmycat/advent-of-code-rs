@@ -17,20 +17,20 @@ pub fn solve(input: &str) -> Result<Solution, IntCodeError> {
 
 	let ac_diagnostic = ac_outputs
 		.pop()
-		.expect("expected to have at least one output");
+		.expect("AC Program is expected to have at least one output");
 
 	for other_output in ac_outputs {
-		assert_eq!(other_output, 0);
+		assert_eq!(other_output, 0, "All outputs except for the last one have to be 0, or there is an error in the intcode handling");
 	}
 
 	let mut tr_outputs = program.inputs(vec![THERMAL_RADIATOR_ID]).run()?;
 
 	let tr_diagnostic = tr_outputs
 		.pop()
-		.expect("expected to have at least one output");
+		.expect("Thermal Radiator program is expected to have at least one output");
 
 	for other_output in tr_outputs {
-		assert_eq!(other_output, 0);
+		assert_eq!(other_output, 0, "All outputs except for the last one have to be 0, or there is an error in the intcode handling");
 	}
 
 	Ok(Solution {
