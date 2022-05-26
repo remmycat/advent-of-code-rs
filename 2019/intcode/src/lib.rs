@@ -1,17 +1,14 @@
 pub mod operation;
 
 use fallible_iterator::{FallibleIterator, IntoFallibleIterator};
+use hashbrown::HashMap;
 use operation::{Operation, OperationParsingError, ParameterMode};
-use std::{
-	collections::{BTreeMap, VecDeque},
-	num::ParseIntError,
-	str::FromStr,
-};
+use std::{collections::VecDeque, num::ParseIntError, str::FromStr};
 use thiserror::Error;
 
 #[derive(Error, Debug, PartialEq)]
 pub enum IntCodeError {
-	// Doesn't have to be an error, we could save code as BTreeMap as well
+	// Doesn't have to be an error, we could save code as a Map as well
 	#[error("address {address} is out of bounds for code of size {code_size}")]
 	AddressOutOfBounds { address: usize, code_size: usize },
 	#[error("encountered negative address {address}")]
@@ -74,7 +71,7 @@ fn try_value_as_address(value: isize) -> Result<usize, IntCodeError> {
 		.map_err(|_| IntCodeError::NegativeAddress { address: value })
 }
 
-fn vec_to_map<T>(as_vec: Vec<T>) -> BTreeMap<usize, T> {
+fn vec_to_map<T>(as_vec: Vec<T>) -> HashMap<usize, T> {
 	as_vec.into_iter().enumerate().collect()
 }
 
@@ -162,7 +159,7 @@ impl IntoFallibleIterator for IntCodeProgram {
 
 pub struct IntCodeProgramIter {
 	/// The active program in-memory
-	memory: BTreeMap<usize, isize>,
+	memory: HashMap<usize, isize>,
 	inputs: VecDeque<isize>,
 	active_address: usize,
 	relative_base: isize,
