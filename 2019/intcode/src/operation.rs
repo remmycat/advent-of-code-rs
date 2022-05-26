@@ -28,6 +28,7 @@ pub enum OpCode {
 	JumpIfFalse,
 	LessThan,
 	Equals,
+	RelativeBaseOffset,
 	Halt,
 }
 
@@ -44,6 +45,7 @@ impl TryFrom<usize> for OpCode {
 			6 => Ok(Self::JumpIfFalse),
 			7 => Ok(Self::LessThan),
 			8 => Ok(Self::Equals),
+			9 => Ok(Self::RelativeBaseOffset),
 			99 => Ok(Self::Halt),
 			_ => Err(OperationParsingError::InvalidOpCode(value)),
 		}
@@ -54,6 +56,7 @@ impl TryFrom<usize> for OpCode {
 pub enum ParameterMode {
 	Position,
 	Immediate,
+	Relative,
 }
 
 #[derive(Debug, PartialEq)]
@@ -66,6 +69,7 @@ pub enum Operation {
 	JumpIfFalse([ParameterMode; 2]),
 	LessThan([ParameterMode; 3]),
 	Equals([ParameterMode; 3]),
+	RelativeBaseOffset([ParameterMode; 1]),
 	Halt,
 }
 
@@ -93,10 +97,12 @@ fn assert_last_is_position<const N: usize>(
 	opcode: OpCode,
 	params: [ParameterMode; N],
 ) -> Result<(), OperationParsingError> {
-	if params[N - 1] != ParameterMode::Position {
+	let last_mode = params[N - 1];
+
+	if last_mode != ParameterMode::Position && last_mode != ParameterMode::Relative {
 		Err(OperationParsingError::ImpossibleParameterMode {
 			opcode,
-			mode: params[N - 1],
+			mode: last_mode,
 			position: N,
 		})
 	} else {
@@ -119,6 +125,7 @@ impl TryFrom<usize> for Operation {
 			let parsed_mode = match mode {
 				0 => ParameterMode::Position,
 				1 => ParameterMode::Immediate,
+				2 => ParameterMode::Relative,
 				_ => {
 					return Err(OperationParsingError::InvalidParameterMode { op: value, mode });
 				}
@@ -173,6 +180,11 @@ impl TryFrom<usize> for Operation {
 				assert_last_is_position(opcode, params)?;
 
 				Ok(Self::Equals(params))
+			}
+			OpCode::RelativeBaseOffset => {
+				let params = get_n_modes::<1>(param_modes)?;
+
+				Ok(Self::RelativeBaseOffset(params))
 			}
 			OpCode::Halt => {
 				// assert that we don't have any parm_modes
@@ -258,12 +270,22 @@ mod tests {
 		);
 
 		assert_eq!(
+			Operation::try_from(1201_usize),
+			Ok(Operation::Add([Relative, Immediate, Position]))
+		);
+
+		assert_eq!(
 			Operation::try_from(11101_usize),
 			Err(OperationParsingError::ImpossibleParameterMode {
 				opcode: OpCode::Add,
 				mode: ParameterMode::Immediate,
 				position: 3
 			})
+		);
+
+		assert_eq!(
+			Operation::try_from(21101_usize),
+			Ok(Operation::Add([Immediate, Immediate, Relative]))
 		);
 
 		assert_eq!(
@@ -275,8 +297,8 @@ mod tests {
 		);
 
 		assert_eq!(
-			Operation::try_from(201_usize),
-			Err(OperationParsingError::InvalidParameterMode { op: 201, mode: 2 })
+			Operation::try_from(301_usize),
+			Err(OperationParsingError::InvalidParameterMode { op: 301, mode: 3 })
 		);
 	}
 }
