@@ -1,4 +1,4 @@
-pub mod operation;
+mod operation;
 
 use fallible_iterator::{FallibleIterator, IntoFallibleIterator};
 use hashbrown::HashMap;
@@ -29,40 +29,8 @@ pub enum IntCodeError {
 	HaltedWithoutUsingAllInputs { unused: usize },
 	#[error("program requested input but no inputs were left")]
 	NoInputsLeft,
-}
-
-#[derive(Debug, PartialEq, Clone, Copy)]
-pub enum Int {
-	Address(usize),
-	Value(isize),
-}
-
-impl Int {
-	pub fn value(&self) -> Result<isize, IntCodeError> {
-		match self {
-			Self::Value(value) => Ok(*value),
-			Self::Address(_) => Err(IntCodeError::ReadAddressAsValue),
-		}
-	}
-
-	pub fn read(&self, program: &IntCodeProgramIter) -> Result<isize, IntCodeError> {
-		match self {
-			Self::Value(value) => Ok(*value),
-			Self::Address(address) => program.read(*address, ParameterMode::Immediate)?.value(),
-		}
-	}
-
-	pub fn write(
-		&self,
-		program: &mut IntCodeProgramIter,
-		value: isize,
-	) -> Result<(), IntCodeError> {
-		match self {
-			Self::Value(_) => return Err(IntCodeError::WriteToValue),
-			Self::Address(address) => program.write(*address, value),
-		}
-		Ok(())
-	}
+	#[error("op includes invalid parameter mode {0:?} for a write-parameter")]
+	InvalidWriteParameterMode(ParameterMode),
 }
 
 fn try_value_as_address(value: isize) -> Result<usize, IntCodeError> {
@@ -77,8 +45,8 @@ fn vec_to_map<T>(as_vec: Vec<T>) -> HashMap<usize, T> {
 
 #[derive(Debug, PartialEq)]
 pub enum HaltReason {
-	Input(Int),
-	Output(Int),
+	Input(usize),
+	Output(isize),
 	Halted,
 }
 
@@ -166,31 +134,38 @@ pub struct IntCodeProgramIter {
 }
 
 impl IntCodeProgramIter {
-	pub fn read(&self, address: usize, mode: ParameterMode) -> Result<Int, IntCodeError> {
-		let int = self.memory.get(&address).copied().unwrap_or(0);
+	pub fn read_value(&self, address: &usize) -> isize {
+		self.memory.get(address).copied().unwrap_or(0)
+	}
+
+	pub fn get_read_param(
+		&self,
+		offset: usize,
+		mode: ParameterMode,
+	) -> Result<isize, IntCodeError> {
+		let int = self.read_value(&(self.active_address + offset));
 
 		match mode {
-			ParameterMode::Immediate => Ok(Int::Value(int)),
-			ParameterMode::Position => Ok(Int::Address(try_value_as_address(int)?)),
-			ParameterMode::Relative => Ok(Int::Address(try_value_as_address(
-				int + self.relative_base,
-			)?)),
+			ParameterMode::Immediate => Ok(int),
+			ParameterMode::Position => Ok(self.read_value(&try_value_as_address(int)?)),
+			ParameterMode::Relative => {
+				Ok(self.read_value(&try_value_as_address(int + self.relative_base)?))
+			}
 		}
 	}
 
-	pub fn read_n<const N: usize>(
+	pub fn get_write_param(
 		&self,
-		start_address: usize,
-		modes: [ParameterMode; N],
-	) -> Result<[Int; N], IntCodeError> {
-		let mut result = [Int::Value(0); N];
+		offset: usize,
+		mode: ParameterMode,
+	) -> Result<usize, IntCodeError> {
+		let int = self.read_value(&(self.active_address + offset));
 
-		// Not sure if the lint makes sense or not.
-		// #[allow(clippy::needless_range_loop)]
-		for i in 0..N {
-			result[i] = self.read(start_address + i, modes[i])?
+		match mode {
+			ParameterMode::Position => Ok(try_value_as_address(int)?),
+			ParameterMode::Relative => Ok(try_value_as_address(int + self.relative_base)?),
+			other => Err(IntCodeError::InvalidWriteParameterMode(other)),
 		}
-		Ok(result)
 	}
 
 	pub fn write(&mut self, address: usize, value: isize) {
@@ -198,95 +173,96 @@ impl IntCodeProgramIter {
 	}
 
 	fn execute(&mut self) -> Result<Option<HaltReason>, IntCodeError> {
-		let address = self.active_address;
-		let operation =
-			Operation::try_from(self.read(address, ParameterMode::Immediate)?.value()?)?;
+		let operation = Operation::try_from(self.read_value(&self.active_address))?;
 
 		// println!("Operation: {operation:?}");
 
 		match operation {
-			Operation::Add(param_modes) => {
-				let [a_int, b_int, res_adr] = self.read_n::<3>(address + 1, param_modes)?;
-				let a = a_int.read(self)?;
-				let b = b_int.read(self)?;
-				let result = a.checked_add(b).ok_or(IntCodeError::USizeOverflow)?;
-				res_adr.write(self, result)?;
-				self.active_address += 4;
-				Ok(None)
-			}
-			Operation::Multiply(param_modes) => {
-				let [a_int, b_int, res_adr] = self.read_n(address + 1, param_modes)?;
-				let a = a_int.read(self)?;
-				let b = b_int.read(self)?;
-				let result = a.checked_mul(b).ok_or(IntCodeError::USizeOverflow)?;
-				res_adr.write(self, result)?;
-				self.active_address += 4;
-				Ok(None)
-			}
-			Operation::Input(param_modes) => {
-				let [addr] = self.read_n(self.active_address + 1, param_modes)?;
-				self.active_address += 2;
-				Ok(Some(HaltReason::Input(addr)))
-			}
-			Operation::Output(param_modes) => {
-				let [out] = self.read_n(self.active_address + 1, param_modes)?;
-				self.active_address += 2;
-				Ok(Some(HaltReason::Output(out)))
-			}
-			Operation::JumpIfTrue(param_modes) => {
-				let [check, jumpto] = self.read_n(self.active_address + 1, param_modes)?;
+			Operation::Add(modes) => {
+				let lhs = self.get_read_param(1, modes[0])?;
+				let rhs = self.get_read_param(2, modes[1])?;
+				let result_target = self.get_write_param(3, modes[2])?;
 
-				if check.read(self)? != 0 {
-					let jumpto_val: isize = jumpto.read(self)?;
-					let new_address: usize = try_value_as_address(jumpto_val)?;
+				let result = lhs.checked_add(rhs).ok_or(IntCodeError::USizeOverflow)?;
+
+				self.write(result_target, result);
+				self.active_address += 4;
+				Ok(None)
+			}
+			Operation::Multiply(modes) => {
+				let lhs = self.get_read_param(1, modes[0])?;
+				let rhs = self.get_read_param(2, modes[1])?;
+				let result_target = self.get_write_param(3, modes[2])?;
+
+				let result = lhs.checked_mul(rhs).ok_or(IntCodeError::USizeOverflow)?;
+
+				self.write(result_target, result);
+				self.active_address += 4;
+				Ok(None)
+			}
+			Operation::Input(modes) => {
+				let input_target = self.get_write_param(1, modes[0])?;
+
+				self.active_address += 2;
+				Ok(Some(HaltReason::Input(input_target)))
+			}
+			Operation::Output(modes) => {
+				let output_value = self.get_read_param(1, modes[0])?;
+
+				self.active_address += 2;
+				Ok(Some(HaltReason::Output(output_value)))
+			}
+			Operation::JumpIfTrue(modes) => {
+				let check = self.get_read_param(1, modes[0])?;
+				let jump_target = self.get_read_param(2, modes[1])?;
+
+				if check != 0 {
+					let new_address: usize = try_value_as_address(jump_target)?;
 					self.active_address = new_address;
 				} else {
 					self.active_address += 3;
 				}
 				Ok(None)
 			}
-			Operation::JumpIfFalse(param_modes) => {
-				let [check, jumpto] = self.read_n(self.active_address + 1, param_modes)?;
+			Operation::JumpIfFalse(modes) => {
+				let check = self.get_read_param(1, modes[0])?;
+				let jump_target = self.get_read_param(2, modes[1])?;
 
-				if check.read(self)? == 0 {
-					let jumpto_val: isize = jumpto.read(self)?;
-					let new_address: usize = try_value_as_address(jumpto_val)?;
+				if check == 0 {
+					let new_address: usize = try_value_as_address(jump_target)?;
 					self.active_address = new_address;
 				} else {
 					self.active_address += 3;
 				}
 				Ok(None)
 			}
-			Operation::LessThan(param_modes) => {
-				let [check_a, check_b, addr] = self.read_n(self.active_address + 1, param_modes)?;
+			Operation::LessThan(modes) => {
+				let lhs = self.get_read_param(1, modes[0])?;
+				let rhs = self.get_read_param(2, modes[1])?;
+				let result_target = self.get_write_param(3, modes[2])?;
 
-				let result = if check_a.read(self)? < check_b.read(self)? {
-					1
-				} else {
-					0
-				};
-				addr.write(self, result)?;
+				let result = if lhs < rhs { 1 } else { 0 };
+
+				self.write(result_target, result);
 				self.active_address += 4;
 				Ok(None)
 			}
-			Operation::Equals(param_modes) => {
-				let [check_a, check_b, addr] = self.read_n(self.active_address + 1, param_modes)?;
+			Operation::Equals(modes) => {
+				let lhs = self.get_read_param(1, modes[0])?;
+				let rhs = self.get_read_param(2, modes[1])?;
+				let result_target = self.get_write_param(3, modes[2])?;
 
-				let result = if check_a.read(self)? == check_b.read(self)? {
-					1
-				} else {
-					0
-				};
-				addr.write(self, result)?;
+				let result = if lhs == rhs { 1 } else { 0 };
+
+				self.write(result_target, result);
 				self.active_address += 4;
 				Ok(None)
 			}
-			Operation::RelativeBaseOffset(param_modes) => {
-				let [offset] = self.read_n(self.active_address + 1, param_modes)?;
+			Operation::RelativeBaseOffset(modes) => {
+				let offset = self.get_read_param(1, modes[0])?;
 
-				self.relative_base += offset.read(self)?;
+				self.relative_base += offset;
 				self.active_address += 2;
-
 				Ok(None)
 			}
 			Operation::Halt => Ok(Some(HaltReason::Halted)),
@@ -306,15 +282,15 @@ impl FallibleIterator for IntCodeProgramIter {
 		while self.active_address < self.memory.len() {
 			match self.execute()? {
 				None => (),
-				Some(HaltReason::Input(target)) => {
+				Some(HaltReason::Input(input_target)) => {
 					if let Some(input) = self.inputs.pop_front() {
-						target.write(self, input)?;
+						self.write(input_target, input);
 					} else {
 						return Err(IntCodeError::NoInputsLeft);
 					}
 				}
-				Some(HaltReason::Output(val)) => {
-					return Ok(Some(val.read(self)?));
+				Some(HaltReason::Output(output_value)) => {
+					return Ok(Some(output_value));
 				}
 				Some(HaltReason::Halted) => {
 					return Ok(None);

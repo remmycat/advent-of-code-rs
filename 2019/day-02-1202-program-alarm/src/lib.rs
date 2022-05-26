@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use fallible_iterator::{FallibleIterator, IntoFallibleIterator};
-use intcode::{operation::ParameterMode, IntCodeError, IntCodeProgram, IntCodeProgramIter};
+use intcode::{IntCodeError, IntCodeProgram, IntCodeProgramIter};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Params {
@@ -26,7 +26,7 @@ fn run_program(program: IntCodeProgram, params: Params) -> Result<isize, IntCode
 
 	assert_eq!(patched.next()?, None, "This program does not have outputs");
 
-	patched.read(0, ParameterMode::Immediate)?.value()
+	Ok(patched.read_value(&0))
 }
 
 fn backsolve(program: IntCodeProgram, wanted_result: isize) -> Result<Params, IntCodeError> {
