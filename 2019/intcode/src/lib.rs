@@ -1,7 +1,6 @@
 mod operation;
 
 use fallible_iterator::{FallibleIterator, IntoFallibleIterator};
-use hashbrown::HashMap;
 use operation::{Operation, OperationParsingError, ParameterMode};
 use std::{collections::VecDeque, num::ParseIntError, str::FromStr};
 use thiserror::Error;
@@ -11,11 +10,13 @@ pub enum IntCodeError {
 	// Doesn't have to be an error, we could save code as a Map as well
 	#[error("address {address} is out of bounds for code of size {code_size}")]
 	AddressOutOfBounds { address: usize, code_size: usize },
-	#[error("encountered negative address {address}")]
-	NegativeAddress { address: isize },
-	#[error("usize overflow")]
-	USizeOverflow,
-	#[error("failed to parse int as usize")]
+	#[error("encountered impossible negative address {address}")]
+	NegativeAddress { address: i64 },
+	#[error("encountered value that does not fit into a signed 64bit integer")]
+	IntOverflow,
+	#[error("encountered an address that does not fit into a {} bit address (because we're running on a {}-bit architecture)", usize::BITS, usize::BITS)]
+	AddressOverflow,
+	#[error("failed to parse int as i64")]
 	ParseInt(#[from] ParseIntError),
 	#[error("failed to parse operation")]
 	ParseOp(#[from] OperationParsingError),
@@ -25,7 +26,7 @@ pub enum IntCodeError {
 	WriteToValue,
 	#[error("tried to read address as value")]
 	ReadAddressAsValue,
-	#[error("program halted but not but {unused} inputs were unused")]
+	#[error("program halted but {unused} inputs were unused")]
 	HaltedWithoutUsingAllInputs { unused: usize },
 	#[error("program requested input but no inputs were left")]
 	NoInputsLeft,
@@ -33,31 +34,27 @@ pub enum IntCodeError {
 	InvalidWriteParameterMode(ParameterMode),
 }
 
-fn try_value_as_address(value: isize) -> Result<usize, IntCodeError> {
+fn try_value_as_address(value: i64) -> Result<usize, IntCodeError> {
 	value
 		.try_into()
 		.map_err(|_| IntCodeError::NegativeAddress { address: value })
 }
 
-fn vec_to_map<T>(as_vec: Vec<T>) -> HashMap<usize, T> {
-	as_vec.into_iter().enumerate().collect()
-}
-
 #[derive(Debug, PartialEq)]
 pub enum HaltReason {
 	Input(usize),
-	Output(isize),
+	Output(i64),
 	Halted,
 }
 
 #[derive(Debug, Clone)]
 pub struct IntCodeProgram {
-	code: Vec<isize>,
-	inputs: VecDeque<isize>,
+	code: Vec<i64>,
+	inputs: VecDeque<i64>,
 }
 
 impl IntCodeProgram {
-	pub fn patch(self, address: usize, value: isize) -> Result<IntCodeProgram, IntCodeError> {
+	pub fn patch(self, address: usize, value: i64) -> Result<IntCodeProgram, IntCodeError> {
 		if address <= self.code.len() {
 			let mut new_code = self.code;
 			new_code[address] = value;
@@ -74,14 +71,14 @@ impl IntCodeProgram {
 		}
 	}
 
-	pub fn inputs(self, inputs: Vec<isize>) -> IntCodeProgram {
+	pub fn inputs(self, inputs: Vec<i64>) -> IntCodeProgram {
 		IntCodeProgram {
 			inputs: VecDeque::from(inputs),
 			code: self.code,
 		}
 	}
 
-	pub fn run(self) -> Result<Vec<isize>, IntCodeError> {
+	pub fn run(self) -> Result<Vec<i64>, IntCodeError> {
 		let mut outputs = vec![];
 		let mut program_iterator = self.into_fallible_iter();
 
@@ -100,8 +97,8 @@ impl FromStr for IntCodeProgram {
 		let code = s
 			.trim()
 			.split(',')
-			.map(|int_str| int_str.parse::<isize>())
-			.collect::<Result<Vec<isize>, ParseIntError>>()?;
+			.map(|int_str| int_str.parse::<i64>())
+			.collect::<Result<Vec<i64>, ParseIntError>>()?;
 
 		Ok(IntCodeProgram {
 			inputs: VecDeque::new(),
@@ -111,13 +108,13 @@ impl FromStr for IntCodeProgram {
 }
 
 impl IntoFallibleIterator for IntCodeProgram {
-	type Item = isize;
+	type Item = i64;
 	type Error = IntCodeError;
 	type IntoFallibleIter = IntCodeProgramIter;
 
 	fn into_fallible_iter(self) -> Self::IntoFallibleIter {
 		IntCodeProgramIter {
-			memory: vec_to_map(self.code),
+			memory: self.code,
 			inputs: self.inputs,
 			active_address: 0,
 			relative_base: 0,
@@ -127,53 +124,76 @@ impl IntoFallibleIterator for IntCodeProgram {
 
 pub struct IntCodeProgramIter {
 	/// The active program in-memory
-	memory: HashMap<usize, isize>,
-	inputs: VecDeque<isize>,
+	memory: Vec<i64>,
+	inputs: VecDeque<i64>,
 	active_address: usize,
-	relative_base: isize,
+	relative_base: i64,
 }
 
 impl IntCodeProgramIter {
-	pub fn read_value(&self, address: &usize) -> isize {
+	pub fn read_value(&self, address: usize) -> i64 {
 		self.memory.get(address).copied().unwrap_or(0)
 	}
 
-	pub fn get_read_param(
-		&self,
-		offset: usize,
-		mode: ParameterMode,
-	) -> Result<isize, IntCodeError> {
-		let int = self.read_value(&(self.active_address + offset));
+	pub fn add_input(&mut self, value: i64) {
+		self.inputs.push_back(value);
+	}
+
+	fn write(&mut self, address: usize, value: i64) {
+		if address >= self.memory.len() {
+			let mut padding = vec![0_i64; address - self.memory.len() + 1];
+			// We know this cannot panic because we only make space for address
+			// and address must already fit into a usize.
+			self.memory.append(&mut padding);
+		}
+
+		self.memory[address] = value;
+	}
+
+	fn get_read_param(&self, offset: usize, mode: ParameterMode) -> Result<i64, IntCodeError> {
+		let int = self.read_value(
+			self.active_address
+				.checked_add(offset)
+				.ok_or(IntCodeError::AddressOverflow)?,
+		);
 
 		match mode {
 			ParameterMode::Immediate => Ok(int),
-			ParameterMode::Position => Ok(self.read_value(&try_value_as_address(int)?)),
-			ParameterMode::Relative => {
-				Ok(self.read_value(&try_value_as_address(int + self.relative_base)?))
-			}
+			ParameterMode::Position => Ok(self.read_value(try_value_as_address(int)?)),
+			ParameterMode::Relative => Ok(self.read_value(try_value_as_address(
+				int.checked_add(self.relative_base)
+					.ok_or(IntCodeError::IntOverflow)?,
+			)?)),
 		}
 	}
 
-	pub fn get_write_param(
-		&self,
-		offset: usize,
-		mode: ParameterMode,
-	) -> Result<usize, IntCodeError> {
-		let int = self.read_value(&(self.active_address + offset));
+	fn get_write_param(&self, offset: usize, mode: ParameterMode) -> Result<usize, IntCodeError> {
+		let int = self.read_value(
+			self.active_address
+				.checked_add(offset)
+				.ok_or(IntCodeError::AddressOverflow)?,
+		);
 
 		match mode {
 			ParameterMode::Position => Ok(try_value_as_address(int)?),
-			ParameterMode::Relative => Ok(try_value_as_address(int + self.relative_base)?),
+			ParameterMode::Relative => Ok(try_value_as_address(
+				int.checked_add(self.relative_base)
+					.ok_or(IntCodeError::IntOverflow)?,
+			)?),
 			other => Err(IntCodeError::InvalidWriteParameterMode(other)),
 		}
 	}
 
-	pub fn write(&mut self, address: usize, value: isize) {
-		self.memory.insert(address, value);
+	fn go_forward(&mut self, increment: usize) -> Result<(), IntCodeError> {
+		self.active_address = self
+			.active_address
+			.checked_add(increment)
+			.ok_or(IntCodeError::AddressOverflow)?;
+		Ok(())
 	}
 
 	fn execute(&mut self) -> Result<Option<HaltReason>, IntCodeError> {
-		let operation = Operation::try_from(self.read_value(&self.active_address))?;
+		let operation = Operation::try_from(self.read_value(self.active_address))?;
 
 		// println!("Operation: {operation:?}");
 
@@ -183,10 +203,10 @@ impl IntCodeProgramIter {
 				let rhs = self.get_read_param(2, modes[1])?;
 				let result_target = self.get_write_param(3, modes[2])?;
 
-				let result = lhs.checked_add(rhs).ok_or(IntCodeError::USizeOverflow)?;
+				let result = lhs.checked_add(rhs).ok_or(IntCodeError::IntOverflow)?;
 
 				self.write(result_target, result);
-				self.active_address += 4;
+				self.go_forward(4)?;
 				Ok(None)
 			}
 			Operation::Multiply(modes) => {
@@ -194,22 +214,22 @@ impl IntCodeProgramIter {
 				let rhs = self.get_read_param(2, modes[1])?;
 				let result_target = self.get_write_param(3, modes[2])?;
 
-				let result = lhs.checked_mul(rhs).ok_or(IntCodeError::USizeOverflow)?;
+				let result = lhs.checked_mul(rhs).ok_or(IntCodeError::IntOverflow)?;
 
 				self.write(result_target, result);
-				self.active_address += 4;
+				self.go_forward(4)?;
 				Ok(None)
 			}
 			Operation::Input(modes) => {
 				let input_target = self.get_write_param(1, modes[0])?;
 
-				self.active_address += 2;
+				self.go_forward(2)?;
 				Ok(Some(HaltReason::Input(input_target)))
 			}
 			Operation::Output(modes) => {
 				let output_value = self.get_read_param(1, modes[0])?;
 
-				self.active_address += 2;
+				self.go_forward(2)?;
 				Ok(Some(HaltReason::Output(output_value)))
 			}
 			Operation::JumpIfTrue(modes) => {
@@ -220,7 +240,7 @@ impl IntCodeProgramIter {
 					let new_address: usize = try_value_as_address(jump_target)?;
 					self.active_address = new_address;
 				} else {
-					self.active_address += 3;
+					self.go_forward(3)?;
 				}
 				Ok(None)
 			}
@@ -232,7 +252,7 @@ impl IntCodeProgramIter {
 					let new_address: usize = try_value_as_address(jump_target)?;
 					self.active_address = new_address;
 				} else {
-					self.active_address += 3;
+					self.go_forward(3)?;
 				}
 				Ok(None)
 			}
@@ -244,7 +264,7 @@ impl IntCodeProgramIter {
 				let result = if lhs < rhs { 1 } else { 0 };
 
 				self.write(result_target, result);
-				self.active_address += 4;
+				self.go_forward(4)?;
 				Ok(None)
 			}
 			Operation::Equals(modes) => {
@@ -255,27 +275,23 @@ impl IntCodeProgramIter {
 				let result = if lhs == rhs { 1 } else { 0 };
 
 				self.write(result_target, result);
-				self.active_address += 4;
+				self.go_forward(4)?;
 				Ok(None)
 			}
 			Operation::RelativeBaseOffset(modes) => {
 				let offset = self.get_read_param(1, modes[0])?;
 
 				self.relative_base += offset;
-				self.active_address += 2;
+				self.go_forward(2)?;
 				Ok(None)
 			}
 			Operation::Halt => Ok(Some(HaltReason::Halted)),
 		}
 	}
-
-	pub fn add_input(&mut self, value: isize) {
-		self.inputs.push_back(value);
-	}
 }
 
 impl FallibleIterator for IntCodeProgramIter {
-	type Item = isize;
+	type Item = i64;
 	type Error = IntCodeError;
 
 	fn next(&mut self) -> Result<Option<Self::Item>, Self::Error> {
@@ -314,7 +330,7 @@ mod tests {
 		let mut instance = program.into_fallible_iter();
 
 		assert_eq!(instance.next()?, None);
-		assert_eq!(instance.memory, vec_to_map(vec![2, 0, 0, 0, 99]));
+		assert_eq!(instance.memory, vec![2, 0, 0, 0, 99]);
 
 		Ok(())
 	}
@@ -325,7 +341,7 @@ mod tests {
 		let mut instance = program.into_fallible_iter();
 
 		assert_eq!(instance.next()?, None);
-		assert_eq!(instance.memory, vec_to_map(vec![2, 3, 0, 6, 99]));
+		assert_eq!(instance.memory, vec![2, 3, 0, 6, 99]);
 
 		Ok(())
 	}
@@ -336,7 +352,7 @@ mod tests {
 		let mut instance = program.into_fallible_iter();
 
 		assert_eq!(instance.next()?, None);
-		assert_eq!(instance.memory, vec_to_map(vec![2, 4, 4, 5, 99, 9801]));
+		assert_eq!(instance.memory, vec![2, 4, 4, 5, 99, 9801]);
 
 		Ok(())
 	}
@@ -349,7 +365,7 @@ mod tests {
 		assert_eq!(instance.next()?, None);
 		assert_eq!(
 			instance.memory,
-			vec_to_map(vec![3500, 9, 10, 70, 2, 3, 11, 0, 99, 30, 40, 50])
+			vec![3500, 9, 10, 70, 2, 3, 11, 0, 99, 30, 40, 50]
 		);
 
 		Ok(())
@@ -361,10 +377,7 @@ mod tests {
 		let mut instance = program.into_fallible_iter();
 
 		assert_eq!(instance.next()?, None);
-		assert_eq!(
-			instance.memory,
-			vec_to_map(vec![30, 1, 1, 4, 2, 5, 6, 0, 99])
-		);
+		assert_eq!(instance.memory, vec![30, 1, 1, 4, 2, 5, 6, 0, 99]);
 
 		Ok(())
 	}
@@ -375,7 +388,7 @@ mod tests {
 		let mut instance = program.into_fallible_iter();
 
 		assert_eq!(instance.next()?, None);
-		assert_eq!(instance.memory, vec_to_map(vec![99, -2, 0, 0, 99]));
+		assert_eq!(instance.memory, vec![99, -2, 0, 0, 99]);
 
 		Ok(())
 	}

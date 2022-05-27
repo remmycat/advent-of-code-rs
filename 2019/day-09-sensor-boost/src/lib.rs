@@ -3,12 +3,12 @@ use std::str::FromStr;
 use intcode::{IntCodeError, IntCodeProgram};
 
 pub struct Solution {
-	pub boost_keycode: isize,
-	pub distress_coordinates: isize,
+	pub boost_keycode: i64,
+	pub distress_coordinates: i64,
 }
 
-const TEST_MODE_INPUT: isize = 1;
-const BOOST_MODE_INPUT: isize = 2;
+const TEST_MODE_INPUT: i64 = 1;
+const BOOST_MODE_INPUT: i64 = 2;
 
 pub fn solve(input: &str) -> Result<Solution, IntCodeError> {
 	let program = IntCodeProgram::from_str(input)?;

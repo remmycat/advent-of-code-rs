@@ -8,3 +8,6 @@ members = [
     "day-07-amplification-circuit",
     "day-09-sensor-boost"
 ]
+
+[profile.test]
+opt-level = 3

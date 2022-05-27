@@ -4,15 +4,15 @@ use itertools::Itertools;
 use std::str::FromStr;
 
 pub struct Solution {
-	pub max_thruster_signal: isize,
-	pub max_looped_thruster_signal: isize,
+	pub max_thruster_signal: i64,
+	pub max_looped_thruster_signal: i64,
 }
 
 fn get_thruster_signal(
 	program: &IntCodeProgram,
-	phase_sequence: Vec<isize>,
+	phase_sequence: Vec<i64>,
 	loopdiloop: bool,
-) -> Result<isize, IntCodeError> {
+) -> Result<i64, IntCodeError> {
 	let mut signal = 0;
 	let mut programs = vec![];
 
@@ -60,7 +60,7 @@ pub fn solve(input: &str) -> Result<Solution, IntCodeError> {
 	let program = IntCodeProgram::from_str(input)?;
 	let mut max_signal = 0;
 
-	for phase_sequence in (0_isize..=4).permutations(5) {
+	for phase_sequence in (0_i64..=4).permutations(5) {
 		let signal = get_thruster_signal(&program, phase_sequence, false)?;
 		if signal > max_signal {
 			max_signal = signal;
@@ -68,7 +68,7 @@ pub fn solve(input: &str) -> Result<Solution, IntCodeError> {
 	}
 
 	let mut max_looped_signal = 0;
-	for phase_sequence in (5_isize..=9).permutations(5) {
+	for phase_sequence in (5_i64..=9).permutations(5) {
 		let signal = get_thruster_signal(&program, phase_sequence, true)?;
 		if signal > max_looped_signal {
 			max_looped_signal = signal;

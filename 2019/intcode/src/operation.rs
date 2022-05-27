@@ -3,53 +3,17 @@ use thiserror::Error;
 #[derive(Error, Debug, PartialEq)]
 pub enum OperationParsingError {
 	#[error("{0} is not a valid opcode")]
-	InvalidOpCode(usize),
+	InvalidOpCode(i64),
 	#[error("encountered invalid negative op {0}")]
-	NegativeOpCode(isize),
-	#[error("opcode {opcode:?} has impossible parameter mode {mode:?} for param {position}")]
-	ImpossibleParameterMode {
-		opcode: OpCode,
-		mode: ParameterMode,
-		position: usize,
+	NegativeOpCode(i64),
+	#[error("Found too many parameter modes for OpCode {opcode} in (expected {expected} parameters, but found additional remainder '{modes_remainder}')")]
+	TooManyParameterModes {
+		opcode: i64,
+		modes_remainder: i64,
+		expected: usize,
 	},
-	#[error("Too many parameter modes for opcode (Found {found}, expected {expected})")]
-	TooManyParameterModes { found: usize, expected: usize },
-	#[error("op {op} includes invalid parameter mode {mode}")]
-	InvalidParameterMode { op: usize, mode: usize },
-}
-
-#[derive(Debug, PartialEq)]
-pub enum OpCode {
-	Add,
-	Multiply,
-	Input,
-	Output,
-	JumpIfTrue,
-	JumpIfFalse,
-	LessThan,
-	Equals,
-	RelativeBaseOffset,
-	Halt,
-}
-
-impl TryFrom<usize> for OpCode {
-	type Error = OperationParsingError;
-
-	fn try_from(value: usize) -> Result<Self, Self::Error> {
-		match value {
-			1 => Ok(Self::Add),
-			2 => Ok(Self::Multiply),
-			3 => Ok(Self::Input),
-			4 => Ok(Self::Output),
-			5 => Ok(Self::JumpIfTrue),
-			6 => Ok(Self::JumpIfFalse),
-			7 => Ok(Self::LessThan),
-			8 => Ok(Self::Equals),
-			9 => Ok(Self::RelativeBaseOffset),
-			99 => Ok(Self::Halt),
-			_ => Err(OperationParsingError::InvalidOpCode(value)),
-		}
-	}
+	#[error("Found invalid parameter mode {mode}")]
+	InvalidParameterMode { mode: i64 },
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -74,137 +38,73 @@ pub enum Operation {
 }
 
 fn get_n_modes<const N: usize>(
-	modes: Vec<ParameterMode>,
+	opcode: i64,
+	mut modes_remainder: i64,
 ) -> Result<[ParameterMode; N], OperationParsingError> {
 	let mut result = [ParameterMode::Position; N];
 
-	let modes_len = modes.len();
-	if modes_len > N {
-		return Err(OperationParsingError::TooManyParameterModes {
-			found: modes_len,
-			expected: N,
-		});
+	#[allow(clippy::needless_range_loop)]
+	for i in 0..N {
+		if modes_remainder == 0 {
+			break;
+		}
+
+		let mode = modes_remainder % 10;
+		let parsed_mode = match mode {
+			0 => ParameterMode::Position,
+			1 => ParameterMode::Immediate,
+			2 => ParameterMode::Relative,
+			_ => {
+				return Err(OperationParsingError::InvalidParameterMode { mode });
+			}
+		};
+
+		result[i] = parsed_mode;
+		modes_remainder /= 10;
 	}
 
-	for (i, mode) in modes.into_iter().enumerate() {
-		result[i] = mode;
+	if modes_remainder != 0 {
+		return Err(OperationParsingError::TooManyParameterModes {
+			opcode,
+			modes_remainder,
+			expected: N,
+		});
 	}
 
 	Ok(result)
 }
 
-fn assert_last_is_position<const N: usize>(
-	opcode: OpCode,
-	params: [ParameterMode; N],
-) -> Result<(), OperationParsingError> {
-	let last_mode = params[N - 1];
-
-	if last_mode != ParameterMode::Position && last_mode != ParameterMode::Relative {
-		Err(OperationParsingError::ImpossibleParameterMode {
-			opcode,
-			mode: last_mode,
-			position: N,
-		})
-	} else {
-		Ok(())
-	}
-}
-
-impl TryFrom<usize> for Operation {
+impl TryFrom<i64> for Operation {
 	type Error = OperationParsingError;
 
-	fn try_from(value: usize) -> Result<Self, Self::Error> {
-		let opcode = OpCode::try_from(value % 100)?;
-
-		let mut param_modes = vec![];
-
-		let mut param_remainder = value / 100;
-
-		while param_remainder > 0 {
-			let mode = param_remainder % 10;
-			let parsed_mode = match mode {
-				0 => ParameterMode::Position,
-				1 => ParameterMode::Immediate,
-				2 => ParameterMode::Relative,
-				_ => {
-					return Err(OperationParsingError::InvalidParameterMode { op: value, mode });
-				}
-			};
-
-			param_modes.push(parsed_mode);
-			param_remainder /= 10;
+	fn try_from(value: i64) -> Result<Self, Self::Error> {
+		if value < 0 {
+			return Err(OperationParsingError::NegativeOpCode(value));
 		}
 
-		match opcode {
-			OpCode::Add => {
-				let params = get_n_modes::<3>(param_modes)?;
-				assert_last_is_position(opcode, params)?;
+		let opcode = value % 100;
 
-				Ok(Self::Add(params))
+		let modes_remainder = value / 100;
+
+		let op = match opcode {
+			1 => Self::Add(get_n_modes::<3>(opcode, modes_remainder)?),
+			2 => Self::Multiply(get_n_modes::<3>(opcode, modes_remainder)?),
+			3 => Self::Input(get_n_modes::<1>(opcode, modes_remainder)?),
+			4 => Self::Output(get_n_modes::<1>(opcode, modes_remainder)?),
+			5 => Self::JumpIfTrue(get_n_modes::<2>(opcode, modes_remainder)?),
+			6 => Self::JumpIfFalse(get_n_modes::<2>(opcode, modes_remainder)?),
+			7 => Self::LessThan(get_n_modes::<3>(opcode, modes_remainder)?),
+			8 => Self::Equals(get_n_modes::<3>(opcode, modes_remainder)?),
+			9 => Self::RelativeBaseOffset(get_n_modes::<1>(opcode, modes_remainder)?),
+			99 => {
+				// assert that we don't have any extra modes
+				get_n_modes::<0>(opcode, modes_remainder)?;
+				Self::Halt
 			}
-			OpCode::Multiply => {
-				let params = get_n_modes::<3>(param_modes)?;
-				assert_last_is_position(opcode, params)?;
+			_ => return Err(OperationParsingError::InvalidOpCode(value)),
+		};
 
-				Ok(Self::Multiply(params))
-			}
-			OpCode::Input => {
-				let params = get_n_modes::<1>(param_modes)?;
-				assert_last_is_position(opcode, params)?;
-
-				Ok(Self::Input(params))
-			}
-			OpCode::Output => {
-				let params = get_n_modes::<1>(param_modes)?;
-
-				Ok(Self::Output(params))
-			}
-			OpCode::JumpIfTrue => {
-				let params = get_n_modes::<2>(param_modes)?;
-
-				Ok(Self::JumpIfTrue(params))
-			}
-			OpCode::JumpIfFalse => {
-				let params = get_n_modes::<2>(param_modes)?;
-
-				Ok(Self::JumpIfFalse(params))
-			}
-			OpCode::LessThan => {
-				let params = get_n_modes::<3>(param_modes)?;
-				assert_last_is_position(opcode, params)?;
-
-				Ok(Self::LessThan(params))
-			}
-			OpCode::Equals => {
-				let params = get_n_modes::<3>(param_modes)?;
-				assert_last_is_position(opcode, params)?;
-
-				Ok(Self::Equals(params))
-			}
-			OpCode::RelativeBaseOffset => {
-				let params = get_n_modes::<1>(param_modes)?;
-
-				Ok(Self::RelativeBaseOffset(params))
-			}
-			OpCode::Halt => {
-				// assert that we don't have any parm_modes
-				get_n_modes::<0>(param_modes)?;
-
-				Ok(Self::Halt)
-			}
-		}
-	}
-}
-
-impl TryFrom<isize> for Operation {
-	type Error = OperationParsingError;
-
-	fn try_from(value: isize) -> Result<Self, Self::Error> {
-		if value >= 0 {
-			Operation::try_from(value as usize)
-		} else {
-			Err(OperationParsingError::NegativeOpCode(value))
-		}
+		Ok(op)
 	}
 }
 
@@ -216,25 +116,22 @@ mod tests {
 	#[test]
 	fn simple_ops() {
 		assert_eq!(
-			Operation::try_from(1_usize),
+			Operation::try_from(1_i64),
 			Ok(Operation::Add([Position, Position, Position]))
 		);
 		assert_eq!(
-			Operation::try_from(2_usize),
+			Operation::try_from(2_i64),
 			Ok(Operation::Multiply([Position, Position, Position]))
 		);
+		assert_eq!(Operation::try_from(3_i64), Ok(Operation::Input([Position])));
 		assert_eq!(
-			Operation::try_from(3_usize),
-			Ok(Operation::Input([Position]))
-		);
-		assert_eq!(
-			Operation::try_from(4_usize),
+			Operation::try_from(4_i64),
 			Ok(Operation::Output([Position]))
 		);
-		assert_eq!(Operation::try_from(99_usize), Ok(Operation::Halt));
+		assert_eq!(Operation::try_from(99_i64), Ok(Operation::Halt));
 
 		assert_eq!(
-			Operation::try_from(0_usize),
+			Operation::try_from(0_i64),
 			Err(OperationParsingError::InvalidOpCode(0))
 		);
 	}
@@ -242,12 +139,12 @@ mod tests {
 	#[test]
 	fn negative_codes() {
 		assert_eq!(
-			Operation::try_from(1_isize),
+			Operation::try_from(1_i64),
 			Ok(Operation::Add([Position, Position, Position]))
 		);
 
 		assert_eq!(
-			Operation::try_from(-1_isize),
+			Operation::try_from(-1_i64),
 			Err(OperationParsingError::NegativeOpCode(-1))
 		);
 	}
@@ -255,50 +152,49 @@ mod tests {
 	#[test]
 	fn parameter_modes() {
 		assert_eq!(
-			Operation::try_from(101_usize),
+			Operation::try_from(101_i64),
 			Ok(Operation::Add([Immediate, Position, Position]))
 		);
 
 		assert_eq!(
-			Operation::try_from(1001_usize),
+			Operation::try_from(1001_i64),
 			Ok(Operation::Add([Position, Immediate, Position]))
 		);
 
 		assert_eq!(
-			Operation::try_from(1101_usize),
+			Operation::try_from(1101_i64),
 			Ok(Operation::Add([Immediate, Immediate, Position]))
 		);
 
 		assert_eq!(
-			Operation::try_from(1201_usize),
+			Operation::try_from(1201_i64),
 			Ok(Operation::Add([Relative, Immediate, Position]))
 		);
 
+		// ParameterMode::Immediate is impossible for the Add operation but
+		// allowed for now in here - it will be caught in lib.rs afterwards.
 		assert_eq!(
-			Operation::try_from(11101_usize),
-			Err(OperationParsingError::ImpossibleParameterMode {
-				opcode: OpCode::Add,
-				mode: ParameterMode::Immediate,
-				position: 3
-			})
+			Operation::try_from(11101_i64),
+			Ok(Operation::Add([Immediate, Immediate, Immediate]))
 		);
 
 		assert_eq!(
-			Operation::try_from(21101_usize),
+			Operation::try_from(21101_i64),
 			Ok(Operation::Add([Immediate, Immediate, Relative]))
 		);
 
 		assert_eq!(
-			Operation::try_from(101101_usize),
+			Operation::try_from(101101_i64),
 			Err(OperationParsingError::TooManyParameterModes {
-				found: 4,
+				opcode: 1,
+				modes_remainder: 1,
 				expected: 3,
 			})
 		);
 
 		assert_eq!(
-			Operation::try_from(301_usize),
-			Err(OperationParsingError::InvalidParameterMode { op: 301, mode: 3 })
+			Operation::try_from(301_i64),
+			Err(OperationParsingError::InvalidParameterMode { mode: 3 })
 		);
 	}
 }

@@ -5,20 +5,20 @@ use intcode::{IntCodeError, IntCodeProgram, IntCodeProgramIter};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Params {
-	noun: isize,
-	verb: isize,
+	noun: i64,
+	verb: i64,
 }
 
 pub struct Solution {
-	pub output_1202: isize,
+	pub output_1202: i64,
 	pub secret_params: Params,
 }
 
 const PARAMS_1202: Params = Params { noun: 12, verb: 2 };
 
-const REVERSE_RESULT: isize = 19690720;
+const REVERSE_RESULT: i64 = 19690720;
 
-fn run_program(program: IntCodeProgram, params: Params) -> Result<isize, IntCodeError> {
+fn run_program(program: IntCodeProgram, params: Params) -> Result<i64, IntCodeError> {
 	let mut patched: IntCodeProgramIter = program
 		.patch(1, params.noun)?
 		.patch(2, params.verb)?
@@ -26,10 +26,10 @@ fn run_program(program: IntCodeProgram, params: Params) -> Result<isize, IntCode
 
 	assert_eq!(patched.next()?, None, "This program does not have outputs");
 
-	Ok(patched.read_value(&0))
+	Ok(patched.read_value(0))
 }
 
-fn backsolve(program: IntCodeProgram, wanted_result: isize) -> Result<Params, IntCodeError> {
+fn backsolve(program: IntCodeProgram, wanted_result: i64) -> Result<Params, IntCodeError> {
 	for noun in 0..=99 {
 		for verb in 0..=99 {
 			let params = Params { noun, verb };
