@@ -38,6 +38,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "aoc-2019-11"
+version = "1.0.0"
+dependencies = [
+ "fallible-iterator",
+ "intcode",
+]
+
+[[package]]
 name = "either"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
