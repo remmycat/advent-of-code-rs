@@ -7,7 +7,8 @@ members = [
     "day-05-sunny-with-a-chance-of-asteroids",
     "day-07-amplification-circuit",
     "day-09-sensor-boost",
-    "day-11-space-police"
+    "day-11-space-police",
+    "day-13-care-package"
 ]
 
 [profile.test]
