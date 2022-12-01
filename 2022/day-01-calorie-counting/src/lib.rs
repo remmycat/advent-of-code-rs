@@ -4,28 +4,24 @@ pub struct Solution {
 }
 
 pub fn solve(input: &str) -> Solution {
-	let mut elves: Vec<u64> = vec![];
-
-	let mut elve: Vec<u64> = vec![];
-
-	for line in input.lines() {
-		if line.is_empty() {
-			elves.push(elve.into_iter().sum());
-			elve = vec![];
-		} else {
-			elve.push(line.parse().expect("input line not parsable as int"))
-		}
-	}
-
-	if !elve.is_empty() {
-		elves.push(elve.into_iter().sum());
-	}
+	let mut elves: Vec<u64> = input
+		.trim()
+		.split("\n\n")
+		.map(|block| {
+			block
+				.split('\n')
+				.map(|line| {
+					line.parse::<u64>()
+						.expect("expected input lines to be parsable as u64")
+				})
+				.sum()
+		})
+		.collect();
 
 	elves.sort_unstable();
-	elves.reverse();
 
-	let max_calories = elves.iter().take(1).sum();
-	let max_3_calories = elves.iter().take(3).sum();
+	let max_calories = elves.iter().rev().take(1).sum();
+	let max_3_calories = elves.iter().rev().take(3).sum();
 
 	Solution {
 		max_calories,
