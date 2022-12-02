@@ -47,7 +47,7 @@ fn get_surroundings(points: &[u8], x_size: usize, xy: usize) -> Surroundings {
 
 pub fn solve(input: &str) -> Solution {
 	let rows: Vec<_> = input.lines().collect();
-	let x_size = rows.get(0).unwrap().len();
+	let x_size = rows.first().unwrap().len();
 
 	let mut points: Vec<_> = rows
 		.into_iter()

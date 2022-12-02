@@ -43,10 +43,7 @@ fn chiton_approval_board(
 ) -> Vec<PathTry> {
 	// If we already have a best score, we can stop caring about every path that has a higher score.
 	if let Some(best_score) = best {
-		paths = paths
-			.into_iter()
-			.filter(|p| p.total_score < best_score)
-			.collect();
+		paths.retain(|p| p.total_score < best_score);
 	}
 
 	// NOTE: ideally we would first deduplicate paths that are at the same

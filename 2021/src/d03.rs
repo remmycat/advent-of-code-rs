@@ -64,7 +64,9 @@ where
 			break;
 		}
 
-		let bit_sum = diagnostics.iter().cloned()
+		let bit_sum = diagnostics
+			.iter()
+			.cloned()
 			.fold(0_i128, |sum, Diagnostic(dia)| sum + dia[bit]);
 
 		let comparison_bit = predicate_get_comparison_bit(leftover_len, bit_sum);
@@ -114,14 +116,14 @@ impl<const N: usize> DiagnosticCollection<N> {
 			self.dias.to_owned(),
 			// are more than half the bits in this position 1s? if yes 1 is used for comparison.
 			// if equal, we should also use 1 in place of the most common bit
-			|len, bit_sum| if bit_sum * 2 >= len { 1 } else { 0 },
+			|len, bit_sum| i128::from(bit_sum * 2 >= len),
 		);
 
 		let scrubber_rating = evaluate_rating(
 			self.dias.to_owned(),
 			// are more than half the bits in this position 1s? if yes 0 is used for comparison.
 			// if equal, we should also use 0 in place of the most common bit
-			|len, bit_sum| if bit_sum * 2 >= len { 0 } else { 1 },
+			|len, bit_sum| i128::from(bit_sum * 2 < len),
 		);
 
 		DiagnosticEvaluation {

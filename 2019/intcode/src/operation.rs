@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-#[derive(Error, Debug, PartialEq)]
+#[derive(Error, Debug, PartialEq, Eq)]
 pub enum OperationParsingError {
 	#[error("{0} is not a valid opcode")]
 	InvalidOpCode(i64),
@@ -16,14 +16,14 @@ pub enum OperationParsingError {
 	InvalidParameterMode { mode: i64 },
 }
 
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum ParameterMode {
 	Position,
 	Immediate,
 	Relative,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Operation {
 	Add([ParameterMode; 3]),
 	Multiply([ParameterMode; 3]),

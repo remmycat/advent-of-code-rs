@@ -5,7 +5,7 @@ use operation::{Operation, OperationParsingError, ParameterMode};
 use std::{collections::VecDeque, num::ParseIntError, str::FromStr};
 use thiserror::Error;
 
-#[derive(Error, Debug, PartialEq)]
+#[derive(Error, Debug, PartialEq, Eq)]
 pub enum IntCodeError {
 	// Doesn't have to be an error, we could save code as a Map as well
 	#[error("address {address} is out of bounds for code of size {code_size}")]
@@ -40,7 +40,7 @@ fn try_value_as_address(value: i64) -> Result<usize, IntCodeError> {
 		.map_err(|_| IntCodeError::NegativeAddress { address: value })
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum HaltReason {
 	Input(usize),
 	Output(i64),
@@ -261,7 +261,7 @@ impl IntCodeProgramIter {
 				let rhs = self.get_read_param(2, modes[1])?;
 				let result_target = self.get_write_param(3, modes[2])?;
 
-				let result = if lhs < rhs { 1 } else { 0 };
+				let result = i64::from(lhs < rhs);
 
 				self.write(result_target, result);
 				self.go_forward(4)?;
@@ -272,7 +272,7 @@ impl IntCodeProgramIter {
 				let rhs = self.get_read_param(2, modes[1])?;
 				let result_target = self.get_write_param(3, modes[2])?;
 
-				let result = if lhs == rhs { 1 } else { 0 };
+				let result = i64::from(lhs == rhs);
 
 				self.write(result_target, result);
 				self.go_forward(4)?;

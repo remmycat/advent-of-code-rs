@@ -126,15 +126,15 @@ pub fn solve(input: &str) -> Solution {
 			.collect();
 
 		if cards.len() == initial_cards && !won.is_empty() {
-			first_win_score = *(won.get(0).unwrap());
+			first_win_score = *(won.first().unwrap());
 		}
 
 		if not_won.is_empty() && won.len() == 1 {
-			last_win_score = *(won.get(0).unwrap());
+			last_win_score = *(won.first().unwrap());
 			break;
 		}
 
-		cards = cards.into_iter().filter(|c| !c.won).collect();
+		cards.retain(|c| !c.won);
 	}
 
 	Solution {

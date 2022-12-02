@@ -238,10 +238,7 @@ pub fn solve(input: &str) -> Solution {
 		if found.is_empty() {
 			panic!("Could not connect any more scanners to the system");
 		} else {
-			scanners = scanners
-				.into_iter()
-				.filter(|(i, _)| !found.contains(i))
-				.collect();
+			scanners.retain(|(i, _)| !found.contains(i));
 		}
 	}
 
@@ -295,6 +292,6 @@ mod tests {
 	fn part_2_solution() {
 		let input = fs::read_to_string("assets/19.txt").unwrap();
 
-		assert_eq!(solve(&input).biggest_scanner_distance, 0);
+		assert_eq!(solve(&input).biggest_scanner_distance, 13184);
 	}
 }

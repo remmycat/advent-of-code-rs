@@ -30,7 +30,7 @@ fn count_octopile(octopi: &[u8], x_size: usize, xy: usize) -> u8 {
 
 pub fn solve(input: &str) -> Solution {
 	let rows: Vec<_> = input.lines().collect();
-	let x_size = rows.get(0).unwrap().len();
+	let x_size = rows.first().unwrap().len();
 
 	let mut octopi: Vec<_> = rows
 		.into_iter()
