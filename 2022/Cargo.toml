@@ -1,7 +1,8 @@
 [workspace]
 
 members = [
-    "day-01-calorie-counting"
+    "day-01-calorie-counting",
+    "day-02-rock-paper-scissors"
 ]
 
 [profile.test]
