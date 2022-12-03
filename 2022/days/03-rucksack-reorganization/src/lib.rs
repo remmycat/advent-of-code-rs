@@ -8,12 +8,23 @@ const LINE_SPLIT: u8 = b'\n';
 const UPPERCASE_START: u8 = b'A' - 1;
 const LOWERCASE_START: u8 = b'a' - 1;
 
-const fn item_to_priority(item: &u8) -> u8 {
-	if *item > LOWERCASE_START {
+const fn item_to_priority_flag(item: &u8) -> u64 {
+	let priority = if *item > LOWERCASE_START {
 		*item - LOWERCASE_START
 	} else {
 		*item - UPPERCASE_START + 26
-	}
+	};
+	1 << priority
+}
+
+const fn priority_flag_to_priority(flag: u64) -> u64 {
+	flag.trailing_zeros() as u64
+}
+
+fn get_compartment_set(compartment: &[u8]) -> u64 {
+	compartment
+		.iter()
+		.fold(0_u64, |set, item| (set | item_to_priority_flag(item)))
 }
 
 pub fn solve(input: &[u8]) -> Solution {
@@ -27,42 +38,20 @@ pub fn solve(input: &[u8]) -> Solution {
 		.filter(|l| !l.is_empty())
 		.enumerate()
 	{
-		let size = rucksack.len();
-		let compartement_size = size / 2;
+		let (left, right) = rucksack.split_at(rucksack.len() / 2);
 
-		// These "sets" use bitflags for each possible item priority.
-		let mut compartement_item_set = 0;
-		let mut full_item_set = 0;
+		let left_compartment_set = get_compartment_set(left);
+		let right_compartment_set = get_compartment_set(right);
 
-		let mut found_duplicate = false;
-
-		for (item_index, priority) in rucksack.iter().map(item_to_priority).enumerate() {
-			let priority_flag: u64 = 1 << priority;
-
-			full_item_set |= priority_flag;
-
-			if item_index < compartement_size {
-				compartement_item_set |= priority_flag;
-				continue;
-			}
-
-			if !found_duplicate && (compartement_item_set & priority_flag) == priority_flag {
-				// found duplicate
-				double_item_priority_sum += priority as u64;
-				// We cannot break out of the loop because we need to build up
-				// full_item_set.
-				found_duplicate = true;
-			}
-		}
+		double_item_priority_sum +=
+			priority_flag_to_priority(left_compartment_set & right_compartment_set);
 
 		// set all non-contained items to 0
-		badge_set &= full_item_set;
+		badge_set &= left_compartment_set | right_compartment_set;
 
 		if elf_index % 3 == 2 {
 			// At this point the badge set should only have a single bit set to 1
-			// Since priority X means a 1 shifted X positions to the left, the inverse
-			// operation (to get the priority back) is counting the trailing zeros.
-			badge_priority_sum += badge_set.trailing_zeros() as u64;
+			badge_priority_sum += priority_flag_to_priority(badge_set);
 			badge_set = u64::MAX;
 		}
 	}

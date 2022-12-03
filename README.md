@@ -16,7 +16,7 @@ Hardware: `MacBook Pro (14-inch, 2021), Apple M1 Pro`
 | :-: | :---------------------- | ------: | :-----: |
 | 01  | Energy Counting         | 21.8 μs |   🙂    |
 | 02  | Rock Paper Scissors     | 3.67 μs |   😎    |
-| 03  | Rucksack Reorganization | 13.5 μs |   😎    |
+| 03  | Rucksack Reorganization |  7.7 μs |   😎    |
 
 ### 2021
 
