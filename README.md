@@ -12,10 +12,11 @@ Time precision depends on the variance measured during the benchmarks.
 
 Hardware: `MacBook Pro (14-inch, 2021), Apple M1 Pro`
 
-| Day | Name                |    Time | Feeling |
-| :-: | :------------------ | ------: | :-----: |
-| 01  | Energy Counting     | 21.8 μs |   🙂    |
-| 02  | Rock Paper Scissors | 3.67 μs |   😎    |
+| Day | Name                    |    Time | Feeling |
+| :-: | :---------------------- | ------: | :-----: |
+| 01  | Energy Counting         | 21.8 μs |   🙂    |
+| 02  | Rock Paper Scissors     | 3.67 μs |   😎    |
+| 03  | Rucksack Reorganization |   13 μs |   😎    |
 
 ### 2021
 
