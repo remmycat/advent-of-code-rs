@@ -19,9 +19,7 @@ const fn item_to_priority(item: &u8) -> u8 {
 pub fn solve(input: &[u8]) -> Solution {
 	let mut double_item_priority_sum: u64 = 0;
 	let mut badge_priority_sum: u64 = 0;
-	// These "sets" use bitflags for each possible item priority.
-	let mut compartement_item_set: u64;
-	let mut full_item_set: u64;
+
 	let mut badge_set: u64 = u64::MAX;
 
 	for (elf_index, rucksack) in input
@@ -32,8 +30,11 @@ pub fn solve(input: &[u8]) -> Solution {
 		let size = rucksack.len();
 		let compartement_size = size / 2;
 
-		compartement_item_set = 0;
-		full_item_set = 0;
+		// These "sets" use bitflags for each possible item priority.
+		let mut compartement_item_set = 0;
+		let mut full_item_set = 0;
+
+		let mut found_duplicate = false;
 
 		for (item_index, priority) in rucksack.iter().map(item_to_priority).enumerate() {
 			let priority_flag: u64 = 1 << priority;
@@ -45,18 +46,16 @@ pub fn solve(input: &[u8]) -> Solution {
 				continue;
 			}
 
-			if (compartement_item_set & priority_flag) == priority_flag {
+			if !found_duplicate && (compartement_item_set & priority_flag) == priority_flag {
 				// found duplicate
 				double_item_priority_sum += priority as u64;
 				// We cannot break out of the loop because we need to build up
 				// full_item_set.
-				// We could set a flag here to stop processing this part of
-				// the loop, but not doing that turns out to be faster, I guess
-				// due to branch prediction.
+				found_duplicate = true;
 			}
 		}
 
-		// set all non-contained item priorities to 0
+		// set all non-contained items to 0
 		badge_set &= full_item_set;
 
 		if elf_index % 3 == 2 {
