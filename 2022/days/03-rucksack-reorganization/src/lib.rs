@@ -1,7 +1,5 @@
-pub struct Solution {
-	pub double_item_priority_sum: u64,
-	pub badge_priority_sum: u64,
-}
+#[derive(Debug, PartialEq, Eq)]
+pub struct Solution(u64, u64);
 
 const LINE_SPLIT: u8 = b'\n';
 
@@ -56,37 +54,18 @@ pub fn solve(input: &[u8]) -> Solution {
 		}
 	}
 
-	Solution {
-		double_item_priority_sum,
-		badge_priority_sum,
-	}
+	Solution(double_item_priority_sum, badge_priority_sum)
 }
 
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use std::include_bytes;
+	use rstest::rstest;
 
-	const EXAMPLE: &[u8] = include_bytes!("../inputs/example.txt");
-	const PERSONAL: &[u8] = include_bytes!("../inputs/personal.txt");
-
-	#[test]
-	fn part_1_example() {
-		assert_eq!(solve(EXAMPLE).double_item_priority_sum, 157);
-	}
-
-	#[test]
-	fn part_1_personal() {
-		assert_eq!(solve(PERSONAL).double_item_priority_sum, 7446);
-	}
-
-	#[test]
-	fn part_2_example() {
-		assert_eq!(solve(EXAMPLE).badge_priority_sum, 70);
-	}
-
-	#[test]
-	fn part_2_personal() {
-		assert_eq!(solve(PERSONAL).badge_priority_sum, 2646);
+	#[rstest]
+	#[case(include_bytes!("../inputs/example.txt"), Solution(157, 70))]
+	#[case(include_bytes!("../inputs/personal.txt"), Solution(7446, 2646))]
+	fn solution(#[case] input: &[u8], #[case] expected: Solution) {
+		assert_eq!(solve(input), expected);
 	}
 }

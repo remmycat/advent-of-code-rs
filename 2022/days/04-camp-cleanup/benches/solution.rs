@@ -1,6 +1,5 @@
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
 use std::hint::black_box;
-use std::include_str;
 
 const NAME: &str = "day_04";
 

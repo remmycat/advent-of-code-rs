@@ -1,8 +1,15 @@
 [workspace]
 
-members = [
-    "days/*"
-]
+members = ["days/*"]
+
+[workspace.package]
+version = "1.0.0"
+edition = "2021"
+license = "MIT"
+
+[workspace.dependencies]
+rstest = "0.16.0"
+criterion = { version = "0.4", default-features = false }
 
 [profile.test]
 # opt-level = 3

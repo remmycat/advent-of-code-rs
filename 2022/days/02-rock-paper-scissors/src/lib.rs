@@ -1,7 +1,5 @@
-pub struct Solution {
-	pub score_if_first_read_correct: u64,
-	pub actual_score: u64,
-}
+#[derive(Debug, PartialEq, Eq)]
+pub struct Solution(u64, u64);
 
 const ROCK_X: &[u8] = b"A X\n";
 const ROCK_Y: &[u8] = b"A Y\n";
@@ -130,42 +128,18 @@ pub fn solve(input: &[u8]) -> Solution {
 		actual_score += actual;
 	}
 
-	Solution {
-		score_if_first_read_correct: wrong_score,
-		actual_score,
-	}
+	Solution(wrong_score, actual_score)
 }
 
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use std::fs;
+	use rstest::rstest;
 
-	#[test]
-	fn part_1_example_cases() {
-		let example = fs::read("inputs/example.txt").expect("Error reading example input file");
-
-		assert_eq!(solve(&example).score_if_first_read_correct, 15);
-	}
-
-	#[test]
-	fn part_1_solution() {
-		let input = fs::read("inputs/personal.txt").expect("Error reading personal input file");
-
-		assert_eq!(solve(&input).score_if_first_read_correct, 10816);
-	}
-
-	#[test]
-	fn part_2_example_cases() {
-		let example = fs::read("inputs/example.txt").expect("Error reading example input file");
-
-		assert_eq!(solve(&example).actual_score, 12);
-	}
-
-	#[test]
-	fn part_2_solution() {
-		let input = fs::read("inputs/personal.txt").expect("Error reading personal input file");
-
-		assert_eq!(solve(&input).actual_score, 11657);
+	#[rstest]
+	#[case(include_bytes!("../inputs/example.txt"), Solution(15, 12))]
+	#[case(include_bytes!("../inputs/personal.txt"), Solution(10816, 11657))]
+	fn solution(#[case] input: &[u8], #[case] expected: Solution) {
+		assert_eq!(solve(input), expected);
 	}
 }

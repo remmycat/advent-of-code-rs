@@ -1,7 +1,5 @@
-pub struct Solution {
-	pub max_calories: u64,
-	pub max_3_calories: u64,
-}
+#[derive(Debug, PartialEq, Eq)]
+pub struct Solution(u64, u64);
 
 pub fn solve_iterators(input: &str) -> Solution {
 	let mut elves: Vec<u64> = input
@@ -20,13 +18,10 @@ pub fn solve_iterators(input: &str) -> Solution {
 
 	elves.sort_unstable();
 
-	let max_calories = elves.iter().rev().take(1).sum();
-	let max_3_calories = elves.iter().rev().take(3).sum();
+	let max_energy = elves.iter().rev().take(1).sum();
+	let max_3_energies = elves.iter().rev().take(3).sum();
 
-	Solution {
-		max_calories,
-		max_3_calories,
-	}
+	Solution(max_energy, max_3_energies)
 }
 
 pub fn solve_loop(input: &str) -> Solution {
@@ -57,61 +52,23 @@ pub fn solve_loop(input: &str) -> Solution {
 	let max_calories: u64 = elves.iter().rev().take(1).sum();
 	let max_3_calories: u64 = elves.iter().rev().take(3).sum();
 
-	Solution {
-		max_calories,
-		max_3_calories,
-	}
+	Solution(max_calories, max_3_calories)
 }
 
 #[cfg(test)]
 mod tests {
 	use super::*;
+	use rstest::rstest;
 	use std::include_str;
 
-	const EXAMPLE: &str = include_str!("../inputs/example.txt");
-	const PERSONAL: &str = include_str!("../inputs/personal.txt");
-
-	// PART 1
-
-	#[test]
-	fn part_1_example_iter() {
-		assert_eq!(solve_iterators(EXAMPLE).max_calories, 24000);
-	}
-
-	#[test]
-	fn part_1_example_loop() {
-		assert_eq!(solve_loop(EXAMPLE).max_calories, 24000);
-	}
-
-	#[test]
-	fn part_1_personal_iter() {
-		assert_eq!(solve_iterators(PERSONAL).max_calories, 74198);
-	}
-
-	#[test]
-	fn part_1_personal_loop() {
-		assert_eq!(solve_loop(PERSONAL).max_calories, 74198);
-	}
-
-	// PART 2
-
-	#[test]
-	fn part_2_example_iter() {
-		assert_eq!(solve_iterators(EXAMPLE).max_3_calories, 45000);
-	}
-
-	#[test]
-	fn part_2_example_loop() {
-		assert_eq!(solve_loop(EXAMPLE).max_3_calories, 45000);
-	}
-
-	#[test]
-	fn part_2_personal_iter() {
-		assert_eq!(solve_iterators(PERSONAL).max_3_calories, 209914);
-	}
-
-	#[test]
-	fn part_2_personal_loop() {
-		assert_eq!(solve_loop(PERSONAL).max_3_calories, 209914);
+	#[rstest]
+	#[case(include_str!("../inputs/example.txt"), Solution(24000, 45000))]
+	#[case(include_str!("../inputs/personal.txt"), Solution(74198,209914))]
+	fn solution(
+		#[case] input: &str,
+		#[case] expected: Solution,
+		#[values(solve_iterators, solve_loop)] solver: impl Fn(&str) -> Solution,
+	) {
+		assert_eq!(solver(input), expected);
 	}
 }

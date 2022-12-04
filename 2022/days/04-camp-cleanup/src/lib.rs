@@ -1,9 +1,7 @@
 use std::str::FromStr;
 
-pub struct Solution {
-	pub full_overlap_pairs_count: u64,
-	pub overlap_pairs_count: u64,
-}
+#[derive(Debug, PartialEq, Eq)]
+pub struct Solution(u64, u64);
 
 struct SectionRange(u8, u8);
 
@@ -70,37 +68,18 @@ pub fn solve(input: &str) -> Solution {
 		.filter(AssignmentPair::has_full_overlap)
 		.count() as u64;
 
-	Solution {
-		full_overlap_pairs_count,
-		overlap_pairs_count,
-	}
+	Solution(full_overlap_pairs_count, overlap_pairs_count)
 }
 
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use std::include_str;
+	use rstest::rstest;
 
-	const EXAMPLE: &str = include_str!("../inputs/example.txt");
-	const PERSONAL: &str = include_str!("../inputs/personal.txt");
-
-	#[test]
-	fn part_1_example() {
-		assert_eq!(solve(EXAMPLE).full_overlap_pairs_count, 2);
-	}
-
-	#[test]
-	fn part_1_personal() {
-		assert_eq!(solve(PERSONAL).full_overlap_pairs_count, 433);
-	}
-
-	#[test]
-	fn part_2_example() {
-		assert_eq!(solve(EXAMPLE).overlap_pairs_count, 4);
-	}
-
-	#[test]
-	fn part_2_personal() {
-		assert_eq!(solve(PERSONAL).overlap_pairs_count, 0);
+	#[rstest]
+	#[case(include_str!("../inputs/example.txt"), Solution(2, 4))]
+	#[case(include_str!("../inputs/personal.txt"), Solution(433, 852))]
+	fn solution(#[case] input: &str, #[case] expected: Solution) {
+		assert_eq!(solve(input), expected);
 	}
 }

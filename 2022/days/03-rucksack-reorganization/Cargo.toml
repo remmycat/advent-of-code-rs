@@ -1,12 +1,12 @@
 [package]
 name = "aoc_2022_03"
-version = "1.0.0"
-edition = "2021"
-license = "MIT"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
 
-[dev-dependencies.criterion]
-version = "0.4"
-default-features = false
+[dev-dependencies]
+rstest.workspace = true
+criterion.workspace = true
 
 [[bench]]
 name = "solution"
