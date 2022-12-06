@@ -12,10 +12,16 @@ fn criterion_benchmark(c: &mut Criterion) {
 	for input in [EXAMPLE_07, PERSONAL] {
 		let bytes = input.len();
 
-		group.throughput(Throughput::Elements(bytes as u64));
+		group.throughput(Throughput::Bytes(bytes as u64));
 
-		group.bench_with_input(BenchmarkId::new("solve", bytes), input, |b, file| {
-			b.iter(|| aoc_2022_06::solve(black_box(file)))
+		group.bench_with_input(
+			BenchmarkId::new("solve_hashset", bytes),
+			input,
+			|b, file| b.iter(|| aoc_2022_06::solve_hashset::solve_hashset(black_box(file))),
+		);
+
+		group.bench_with_input(BenchmarkId::new("solve_loop", bytes), input, |b, file| {
+			b.iter(|| aoc_2022_06::solve_loop::solve_loop(black_box(file)))
 		});
 	}
 
