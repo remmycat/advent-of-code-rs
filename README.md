@@ -19,6 +19,7 @@ Hardware: `MacBook Pro (14-inch, 2021), Apple M1 Pro`
 | 03  | Rucksack Reorganization |  7.7 μs |   😎    |
 | 04  | Camp Cleanup            | 34.1 μs |   🙂    |
 | 05  | Supply Stacks           | 31.5 μs |   🙂    |
+| 06  | Tuning Trouble          | 42.8 μs |   😎    |
 
 ### 2021
 
