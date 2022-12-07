@@ -3,8 +3,8 @@ use std::hint::black_box;
 
 const NAME: &str = "day_07";
 
-const EXAMPLE: &str = include_str!("../inputs/example.txt");
-const PERSONAL: &str = include_str!("../inputs/personal.txt");
+const EXAMPLE: &[u8] = include_bytes!("../inputs/example.txt");
+const PERSONAL: &[u8] = include_bytes!("../inputs/personal.txt");
 
 fn criterion_benchmark(c: &mut Criterion) {
 	let mut group = c.benchmark_group(NAME);

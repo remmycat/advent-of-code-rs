@@ -2,26 +2,26 @@
 pub struct Solution(usize, usize);
 
 struct Directory<'i> {
-	name: &'i str,
+	name: &'i [u8],
 	dirs: Vec<Directory<'i>>,
-	file_sizes: Vec<usize>,
+	files_size: usize,
 	is_root: bool,
 	total_size: usize,
 }
 
 #[derive(Debug, PartialEq, Eq)]
 enum HaltReason<'i> {
-	GoUpAnd(&'i str),
-	GoRootAnd(&'i str),
+	GoUpAnd(&'i [u8]),
+	GoRootAnd(&'i [u8]),
 	Done,
 }
 
 impl<'i> Directory<'i> {
-	fn new(name: &'i str) -> Self {
+	fn new(name: &'i [u8]) -> Self {
 		Directory {
 			name,
 			dirs: Default::default(),
-			file_sizes: Default::default(),
+			files_size: 0,
 			is_root: false,
 			total_size: 0,
 		}
@@ -30,24 +30,21 @@ impl<'i> Directory<'i> {
 	fn new_root() -> Self {
 		Directory {
 			is_root: true,
-			..Directory::new("/")
+			..Directory::new(b"/")
 		}
 	}
 
-	fn add_contents(&mut self, list: &'i str) {
-		for entry in list.lines().map(DirChild::from) {
-			match entry {
-				DirChild::File(file) => {
-					self.file_sizes.push(file);
-				}
-				DirChild::Dir(directory) => {
-					self.dirs.push(directory);
-				}
+	fn add_contents(&mut self, list: &'i [u8]) {
+		list.split(|b| *b == b'\n').for_each(|line| {
+			if line[0].is_ascii_digit() {
+				self.files_size += parse_usize(line);
+			} else {
+				self.dirs.push(Directory::new(&line[4..]));
 			}
-		}
+		})
 	}
 
-	fn execute_in_dir(&mut self, dirname: &'i str, commands: &'i str) -> HaltReason<'i> {
+	fn execute_in_dir(&mut self, dirname: &'i [u8], commands: &'i [u8]) -> HaltReason<'i> {
 		let dir = self
 			.dirs
 			.iter_mut()
@@ -57,28 +54,30 @@ impl<'i> Directory<'i> {
 		dir.execute_commands(commands)
 	}
 
-	fn execute_commands(&mut self, commands: &'i str) -> HaltReason<'i> {
-		let mut rest = if self.is_root {
-			commands.split_once("$ ").expect("bad input").1
-		} else {
-			commands
-		};
+	fn execute_commands(&mut self, commands: &'i [u8]) -> HaltReason<'i> {
+		let mut rest = commands;
 
-		while let Some((command, next_rest)) = rest.split_once("$ ").or({
+		while let Some((command, next_rest)) = {
 			if rest.is_empty() {
 				None
 			} else {
-				Some((rest, ""))
+				let next_command_pos = rest.iter().skip(1).position(|b| *b == b'$');
+				if let Some(pos) = next_command_pos {
+					Some(rest.split_at(pos + 1))
+				} else {
+					// last command
+					Some((rest, Default::default()))
+				}
 			}
-		}) {
+		} {
 			rest = next_rest;
 
 			match Command::from(command) {
 				Command::Ls(Some(list)) => self.add_contents(list),
 				Command::Ls(None) => (),
-				Command::Cd("..") => return HaltReason::GoUpAnd(rest),
-				Command::Cd("/") if self.is_root => (),
-				Command::Cd("/") => return HaltReason::GoRootAnd(rest),
+				Command::Cd(b"..") => return HaltReason::GoUpAnd(rest),
+				Command::Cd(b"/") if self.is_root => (),
+				Command::Cd(b"/") => return HaltReason::GoRootAnd(rest),
 				Command::Cd(dirname) => match self.execute_in_dir(dirname, rest) {
 					HaltReason::Done => return HaltReason::Done,
 					HaltReason::GoUpAnd(new_rest) => rest = new_rest,
@@ -88,24 +87,16 @@ impl<'i> Directory<'i> {
 			}
 		}
 
-		// in the last command we can ignore everything that doesn't give us more data
-		if !rest.is_empty() {
-			if let Command::Ls(Some(list)) = Command::from(rest) {
-				self.add_contents(list)
-			}
-		}
-
 		HaltReason::Done
 	}
 
 	fn update_total_size(&mut self) -> usize {
-		let files_size = self.file_sizes.iter().sum::<usize>();
 		let dirs_size = self
 			.dirs
 			.iter_mut()
 			.map(|f| f.update_total_size())
 			.sum::<usize>();
-		self.total_size = files_size + dirs_size;
+		self.total_size = self.files_size + dirs_size;
 		self.total_size
 	}
 
@@ -131,47 +122,44 @@ impl<'i> Directory<'i> {
 	}
 }
 
-enum DirChild<'i> {
-	File(usize),
-	Dir(Directory<'i>),
-}
-
-impl<'i> From<&'i str> for DirChild<'i> {
-	fn from(s: &'i str) -> Self {
-		let (a, b) = s.split_once(' ').expect("bad input");
-
-		if a == "dir" {
-			Self::Dir(Directory::new(b))
-		} else {
-			let size = a.parse::<usize>().expect("bad file size");
-			Self::File(size)
+const NUMBERS_START: u8 = b'0';
+fn parse_usize(b: &[u8]) -> usize {
+	let mut num = (b[0] - NUMBERS_START) as usize;
+	for digit in &b[1..] {
+		if !digit.is_ascii_digit() {
+			return num;
 		}
+		num = num * 10 + (digit - NUMBERS_START) as usize;
 	}
+	num
 }
 
-#[derive(Debug)]
 enum Command<'i> {
-	Cd(&'i str),
-	Ls(Option<&'i str>),
+	Cd(&'i [u8]),
+	Ls(Option<&'i [u8]>),
 }
 
-impl<'i> From<&'i str> for Command<'i> {
-	fn from(s: &'i str) -> Self {
-		match &s[0..2] {
-			"ls" => {
-				let lines = s.trim().split_once('\n').map(|(_, b)| b);
-				Self::Ls(lines)
+impl<'i> From<&'i [u8]> for Command<'i> {
+	fn from(bytes: &'i [u8]) -> Self {
+		match bytes[2] {
+			// $ ls\n...
+			// 01234567
+			b'l' => {
+				if bytes.len() == 5 {
+					Self::Ls(None)
+				} else {
+					Self::Ls(Some(&bytes[5..(bytes.len() - 1)]))
+				}
 			}
-			"cd" => {
-				let (_, to) = s.trim().split_once(' ').expect("missing cd target");
-				Self::Cd(to)
-			}
+			// $ cd ...
+			// 01234567
+			b'c' => Self::Cd(&bytes[5..(bytes.len() - 1)]),
 			_ => panic!("unknown command"),
 		}
 	}
 }
 
-pub fn solve<'i>(input: &'i str) -> Solution {
+pub fn solve<'i>(input: &'i [u8]) -> Solution {
 	let mut root: Directory<'i> = Directory::new_root();
 
 	let halt = root.execute_commands(input);
@@ -202,9 +190,9 @@ mod tests {
 	use rstest::rstest;
 
 	#[rstest]
-	#[case(include_str!("../inputs/example.txt"), Solution(95437,24933642))]
-	#[case(include_str!("../inputs/personal.txt"), Solution(1581595,0))]
-	fn solution(#[case] input: &str, #[case] expected: Solution) {
+	#[case(include_bytes!("../inputs/example.txt"), Solution(95437,24933642))]
+	#[case(include_bytes!("../inputs/personal.txt"), Solution(1581595,1544176))]
+	fn solution(#[case] input: &[u8], #[case] expected: Solution) {
 		assert_eq!(solve(input), expected);
 	}
 }

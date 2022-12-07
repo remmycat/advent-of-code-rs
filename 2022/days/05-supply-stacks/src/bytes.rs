@@ -4,7 +4,6 @@ use crate::Solution;
 
 const NUMBERS_START: u8 = b'0';
 
-#[inline(never)]
 fn get_peaks(stacks: &[Vec<u8>]) -> String {
 	stacks
 		.iter()
