@@ -1,7 +1,7 @@
 #[derive(Debug, PartialEq, Eq)]
 pub struct Solution(u64, u64);
 
-pub fn solve(input: &str) -> Solution {
+pub fn solve(input: &[u8]) -> Solution {
 	Solution(0, 0)
 }
 
@@ -13,7 +13,7 @@ mod tests {
 	#[rstest]
 	#[case(todo!(), Solution(0,0))]
 	#[case(todo!(), Solution(0,0))]
-	fn solution(#[case] input: &str, #[case] expected: Solution) {
+	fn solution(#[case] input: &[u8], #[case] expected: Solution) {
 		assert_eq!(solve(input), expected);
 	}
 }

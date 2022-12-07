@@ -1,8 +1,7 @@
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
 use std::hint::black_box;
-use std::include_str;
 
-const NAME: &str = todo!();
+const NAME: &str = "day_07";
 
 const EXAMPLE: &str = include_str!("../inputs/example.txt");
 const PERSONAL: &str = include_str!("../inputs/personal.txt");
@@ -16,7 +15,7 @@ fn criterion_benchmark(c: &mut Criterion) {
 		group.throughput(Throughput::Bytes(bytes as u64));
 
 		group.bench_with_input(BenchmarkId::new("solve", bytes), input, |b, file| {
-			b.iter(|| aoc_2022_xx::solve(black_box(file)))
+			b.iter(|| aoc_2022_07::solve(black_box(file)))
 		});
 	}
 
