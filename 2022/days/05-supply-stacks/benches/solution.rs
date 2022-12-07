@@ -15,12 +15,12 @@ fn criterion_benchmark(c: &mut Criterion) {
 		group.throughput(Throughput::Bytes(bytes as u64));
 
 		group.bench_with_input(BenchmarkId::new("solve_string", bytes), input, |b, file| {
-			b.iter(|| aoc_2022_05::solve_string(black_box(file)))
+			b.iter(|| aoc_2022_05::string::solve(black_box(file)))
 		});
 
 		group.bench_with_input(BenchmarkId::new("solve_bytes", bytes), input, |b, file| {
 			let byte_input = file.as_bytes();
-			b.iter(|| aoc_2022_05::solve_bytes(black_box(byte_input)))
+			b.iter(|| aoc_2022_05::bytes::solve(black_box(byte_input)))
 		});
 	}
 
