@@ -20,7 +20,8 @@ Hardware: `MacBook Pro (14-inch, 2021), Apple M1 Pro`
 | 04  | Camp Cleanup            | 34.1 μs |   🙂    |
 | 05  | Supply Stacks           | 15.8 μs |   😎    |
 | 06  | Tuning Trouble          |  5.9 μs |   😎    |
-| 06  | No Space Left On Device | 18.2 μs |   😎    |
+| 07  | No Space Left On Device | 18.2 μs |   😎    |
+| 08  | Treetop Tree House      |   210μs |   🤔    |
 
 ### 2021
 
