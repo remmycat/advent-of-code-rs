@@ -22,6 +22,7 @@ Hardware: `MacBook Pro (14-inch, 2021), Apple M1 Pro`
 | 06  | Tuning Trouble          |  5.9 μs |   😎    |
 | 07  | No Space Left On Device | 18.2 μs |   😎    |
 | 08  | Treetop Tree House      |   210μs |   🤔    |
+| 09  | Rope Bridge             |   661μs |   😕    |
 
 ### 2021
 
