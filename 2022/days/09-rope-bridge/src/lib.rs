@@ -6,12 +6,17 @@ use std::{
 #[derive(Debug, PartialEq, Eq)]
 pub struct Solution(u64, u64);
 
+mod assumptions {
+	pub type GridInt = i16;
+	pub type GridUint = u16;
+}
+
 /// Point(x,y)
 #[derive(Debug, Hash, PartialEq, Eq, Clone, Copy)]
-pub struct Point(i16, i16);
+pub struct Point(assumptions::GridInt, assumptions::GridInt);
 
 impl Point {
-	fn abs_diff(self, other: Self) -> u16 {
+	fn abs_diff(self, other: Self) -> assumptions::GridUint {
 		let Point(x, y) = self;
 		let Point(x2, y2) = other;
 		(x.abs_diff(x2)).max(y.abs_diff(y2))
@@ -78,8 +83,8 @@ const START_POINT: Point = Point(0, 0);
 pub fn solve(input: &[u8]) -> Solution {
 	let mut head = START_POINT;
 	let mut rope = [START_POINT; 9];
-	let mut tail_visited: HashSet<Point> = HashSet::from([START_POINT]);
-	let mut long_tail_visited: HashSet<Point> = HashSet::from([START_POINT]);
+	let mut tail_visited: Vec<Point> = vec![START_POINT];
+	let mut long_tail_visited: Vec<Point> = vec![START_POINT];
 
 	for line in input.split(|b| *b == b'\n') {
 		let dir: Point = line[0].into();
@@ -101,10 +106,10 @@ pub fn solve(input: &[u8]) -> Solution {
 
 				match index {
 					0 => {
-						tail_visited.insert(*rope_part);
+						tail_visited.push(*rope_part);
 					}
 					8 => {
-						long_tail_visited.insert(*rope_part);
+						long_tail_visited.push(*rope_part);
 					}
 					_ => (),
 				}
@@ -112,7 +117,14 @@ pub fn solve(input: &[u8]) -> Solution {
 		}
 	}
 
-	Solution(tail_visited.len() as u64, long_tail_visited.len() as u64)
+	let tail_visited_unique: HashSet<Point> = HashSet::from_iter(tail_visited.into_iter());
+	let long_tail_visited_unique: HashSet<Point> =
+		HashSet::from_iter(long_tail_visited.into_iter());
+
+	Solution(
+		tail_visited_unique.len() as u64,
+		long_tail_visited_unique.len() as u64,
+	)
 }
 
 #[cfg(test)]
