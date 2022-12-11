@@ -21,8 +21,9 @@ Hardware: `MacBook Pro (14-inch, 2021), Apple M1 Pro`
 | 05  | Supply Stacks           | 15.8 μs |   😎    |
 | 06  | Tuning Trouble          |  5.9 μs |   😎    |
 | 07  | No Space Left On Device | 18.2 μs |   😎    |
-| 08  | Treetop Tree House      |   210μs |   🤔    |
-| 09  | Rope Bridge             |   241μs |   🙂    |
+| 08  | Treetop Tree House      |  210 μs |   🤔    |
+| 09  | Rope Bridge             |  241 μs |   🙂    |
+| 10  | Cathode Ray Rube        |  1.5 μs |   😎    |
 
 ### 2021
 
