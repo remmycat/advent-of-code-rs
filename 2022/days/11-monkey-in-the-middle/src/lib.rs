@@ -1,4 +1,4 @@
-use hashbrown::HashMap;
+// use hashbrown::HashMap;
 use std::{collections::VecDeque, iter::repeat};
 
 #[derive(Debug, PartialEq, Eq)]
@@ -121,7 +121,7 @@ pub fn solve(input: &[u8]) -> Solution {
 	let mut worrysome_monkeys = monkeys.clone();
 	let mut worrysome_inspections = inspections.clone();
 
-	let mut cache: HashMap<usize, (usize, Vec<usize>)> = HashMap::new();
+	// let mut cache: HashMap<Vec<usize>, (usize, Vec<usize>)> = HashMap::new();
 
 	let common_divisor: Worry = monkeys.iter().map(|m| m.division_test.0).product();
 
@@ -137,11 +137,12 @@ pub fn solve(input: &[u8]) -> Solution {
 	inspections.sort_unstable();
 	let monkey_business_20 = inspections.iter().rev().take(2).product();
 
-	let mut rounds = 0_usize..10000;
+	// let mut rounds = 0_usize..10000;
 
-	let mut caching = true;
+	// let mut caching = true;
 
-	while let Some(round) = rounds.next() {
+	// while let Some(round) = rounds.next() {
+	for _ in 0_usize..10000 {
 		for monkey_index in 0..monkeys_len {
 			while let Some((item, to_index)) = worrysome_monkeys[monkey_index].throw_item(false) {
 				worrysome_inspections[monkey_index] += 1;
@@ -150,28 +151,33 @@ pub fn solve(input: &[u8]) -> Solution {
 					.push_back(item % common_divisor);
 			}
 		}
-		if caching {
-			// I have not proven that a sum is unique for these inputs but it seems to work 😅
-			let state: usize = worrysome_monkeys.iter().flat_map(|m| m.items.iter()).sum();
-			if let Some((round_then, inspections_then)) = cache.get(&state) {
-				let round_diff = round - *round_then;
-				let shortcuts = rounds.len() / round_diff;
-				if shortcuts > 0 {
-					// Let's take a shortcut
-					for (monkey_index, old_inspection) in inspections_then.iter().enumerate() {
-						let current = worrysome_inspections[monkey_index];
-						let diff = current - *old_inspection;
-						worrysome_inspections[monkey_index] += diff * shortcuts;
-					}
+		// if caching {
+		// 	// I have not proven that this horrible (fast) hash is unique for these inputs but it seems to work 😅
+		// 	let state: Vec<_> = worrysome_monkeys
+		// 		.iter()
+		// 		.flat_map(|m| m.items.iter().cloned())
+		// 		.collect();
 
-					// this is apparently the best way to skip elements on a mutable iterator? 🤷🏻
-					rounds.nth(round_diff * shortcuts - 1);
-				}
-				caching = false;
-			} else {
-				cache.insert(state, (round, worrysome_inspections.clone()));
-			}
-		}
+		// 	if let Some((round_then, inspections_then)) = cache.get(&state) {
+		// 		// println!("CACHE HIT AT {round} from {round_then:?}");
+		// 		let round_diff = round - *round_then;
+		// 		let shortcuts = rounds.len() / round_diff;
+		// 		if shortcuts > 0 {
+		// 			// Let's take a shortcut
+		// 			for (monkey_index, old_inspection) in inspections_then.iter().enumerate() {
+		// 				let current = worrysome_inspections[monkey_index];
+		// 				let diff = current - *old_inspection;
+		// 				worrysome_inspections[monkey_index] += diff * shortcuts;
+		// 			}
+
+		// 			// this is apparently the best way to skip elements on a mutable iterator? 🤷🏻
+		// 			rounds.nth(round_diff * shortcuts - 1);
+		// 		}
+		// 		caching = false;
+		// 	} else {
+		// 		cache.insert(state, (round, worrysome_inspections.clone()));
+		// 	}
+		// }
 	}
 	worrysome_inspections.sort_unstable();
 
