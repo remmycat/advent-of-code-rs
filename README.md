@@ -24,6 +24,7 @@ Hardware: `MacBook Pro (14-inch, 2021), Apple M1 Pro`
 | 08  | Treetop Tree House      |  210 μs |   🤔    |
 | 09  | Rope Bridge             |  241 μs |   🙂    |
 | 10  | Cathode Ray Tube        |  1.5 μs |   😎    |
+| 11  | Monkey in the Middle    |  485 μs |   🤔    |
 
 ### 2021
 

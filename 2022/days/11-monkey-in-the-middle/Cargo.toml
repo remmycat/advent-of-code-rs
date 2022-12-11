@@ -1,0 +1,16 @@
+[package]
+name = "aoc-2022-11"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dev-dependencies]
+rstest.workspace = true
+criterion.workspace = true
+
+[dependencies]
+hashbrown = "0.13"
+
+[[bench]]
+name = "solution"
+harness = false
