@@ -1,6 +1,7 @@
 [workspace]
 
 members = ["days/*"]
+exclude = ["days/12-hill-climbing-algorithm"]
 
 [workspace.package]
 version = "1.0.0"

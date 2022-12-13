@@ -12,19 +12,22 @@ Time precision depends on the variance measured during the benchmarks.
 
 Hardware: `MacBook Pro (14-inch, 2021), Apple M1 Pro`
 
-| Day | Name                    |    Time | Feeling |
-| :-: | :---------------------- | ------: | :-----: |
-| 01  | Energy Counting         | 21.8 μs |   🙂    |
-| 02  | Rock Paper Scissors     | 3.67 μs |   😎    |
-| 03  | Rucksack Reorganization |  7.7 μs |   😎    |
-| 04  | Camp Cleanup            | 34.1 μs |   🙂    |
-| 05  | Supply Stacks           | 15.8 μs |   😎    |
-| 06  | Tuning Trouble          |  5.9 μs |   😎    |
-| 07  | No Space Left On Device | 18.2 μs |   😎    |
-| 08  | Treetop Tree House      |  210 μs |   🤔    |
-| 09  | Rope Bridge             |  241 μs |   🙂    |
-| 10  | Cathode Ray Tube        |  1.5 μs |   😎    |
-| 11  | Monkey in the Middle    |  2.0 ms |   😕    |
+| Day | Name                    |          Time | Feeling |
+| :-: | :---------------------- | ------------: | :-----: |
+| 01  | Energy Counting         |       21.8 μs |   🙂    |
+| 02  | Rock Paper Scissors     |       3.67 μs |   😎    |
+| 03  | Rucksack Reorganization |        7.7 μs |   😎    |
+| 04  | Camp Cleanup            |       34.1 μs |   🙂    |
+| 05  | Supply Stacks           |       15.8 μs |   😎    |
+| 06  | Tuning Trouble          |        5.9 μs |   😎    |
+| 07  | No Space Left On Device |       18.2 μs |   😎    |
+| 08  | Treetop Tree House      |        210 μs |   🤔    |
+| 09  | Rope Bridge             |        241 μs |   🙂    |
+| 10  | Cathode Ray Tube        |        1.5 μs |   😎    |
+| 11  | Monkey in the Middle    |        2.0 ms |   😕    |
+| 12  | Hill Climbing Algorithm | ~20 min[^bfs] |   😛    |
+
+[^bfs]: via BFS, as in [Big Friendly Sharpie](/2022/days/12-hill-climbing-algorithm/nope.jpg)
 
 ### 2021
 
