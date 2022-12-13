@@ -1,5 +1,5 @@
 // use hashbrown::HashMap;
-use std::{collections::VecDeque, iter::repeat};
+use std::iter::repeat;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Solution(usize, usize);
@@ -40,14 +40,14 @@ impl WorryOperation {
 
 #[derive(Debug, Clone)]
 struct Monkey {
-	items: VecDeque<Worry>,
+	items: Vec<Worry>,
 	operation: WorryOperation,
 	division_test: (Worry, usize, usize),
 }
 
 impl Monkey {
 	fn throw_item(&mut self, no_worries: bool) -> Option<(Worry, usize)> {
-		let worry = self.items.pop_front()?;
+		let worry = self.items.pop()?;
 
 		// monkey is holding item
 		let worry = self.operation.apply(worry);
@@ -77,7 +77,7 @@ impl From<&[u8]> for Monkey {
 		let lines: Vec<_> = input.split(|b| *b == b'\n').collect();
 
 		let (_, items) = lines[1].split_at(ITEMS_START);
-		let items: VecDeque<_> = items
+		let items: Vec<_> = items
 			.split(|b| *b == b' ')
 			.map(|worry| parse_uint(worry) as Worry)
 			.collect();
@@ -116,10 +116,10 @@ pub fn solve(input: &[u8]) -> Solution {
 
 	let monkeys_len = monkeys.len();
 
-	let mut inspections: Vec<_> = repeat(0_usize).take(monkeys_len).collect();
+	let mut counts: Vec<_> = repeat(0_usize).take(monkeys_len).collect();
 
 	let mut worrysome_monkeys = monkeys.clone();
-	let mut worrysome_inspections = inspections.clone();
+	let mut panicked_counts = counts.clone();
 
 	// let mut cache: HashMap<Vec<usize>, (usize, Vec<usize>)> = HashMap::new();
 
@@ -128,27 +128,27 @@ pub fn solve(input: &[u8]) -> Solution {
 	for _ in 0..20 {
 		for monkey_index in 0..monkeys_len {
 			while let Some((item, to_index)) = monkeys[monkey_index].throw_item(true) {
-				inspections[monkey_index] += 1;
-				monkeys[to_index].items.push_back(item % common_divisor);
+				counts[monkey_index] += 1;
+				monkeys[to_index].items.push(item);
 			}
 		}
 	}
 
-	inspections.sort_unstable();
-	let monkey_business_20 = inspections.iter().rev().take(2).product();
+	counts.sort_unstable();
+	let monkey_business_20 = counts.iter().rev().take(2).product();
 
 	// let mut rounds = 0_usize..10000;
 
 	// let mut caching = true;
 
 	// while let Some(round) = rounds.next() {
-	for _ in 0_usize..10000 {
+	for _ in 0_usize..10_000 {
 		for monkey_index in 0..monkeys_len {
 			while let Some((item, to_index)) = worrysome_monkeys[monkey_index].throw_item(false) {
-				worrysome_inspections[monkey_index] += 1;
+				panicked_counts[monkey_index] += 1;
 				worrysome_monkeys[to_index]
 					.items
-					.push_back(item % common_divisor);
+					.push(item % common_divisor);
 			}
 		}
 		// if caching {
@@ -179,9 +179,9 @@ pub fn solve(input: &[u8]) -> Solution {
 		// 	}
 		// }
 	}
-	worrysome_inspections.sort_unstable();
+	panicked_counts.sort_unstable();
 
-	let monkey_business_10000 = worrysome_inspections.iter().rev().take(2).product();
+	let monkey_business_10000 = panicked_counts.iter().rev().take(2).product();
 
 	Solution(monkey_business_20, monkey_business_10000)
 }
