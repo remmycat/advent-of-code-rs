@@ -26,6 +26,7 @@ Hardware: `MacBook Pro (14-inch, 2021), Apple M1 Pro`
 | 10  | Cathode Ray Tube        |        1.5 μs |   😎    |
 | 11  | Monkey in the Middle    |        2.0 ms |   😕    |
 | 12  | Hill Climbing Algorithm | ~20 min[^bfs] |   😛    |
+| 13  | Distress Signal         |        392 μs |   😕    |
 
 [^bfs]: via BFS, as in [Big Friendly Sharpie](/2022/days/12-hill-climbing-algorithm/nope.jpg)
 
