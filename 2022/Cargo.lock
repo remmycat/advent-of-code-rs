@@ -81,6 +81,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "aoc-2022-14"
+version = "1.0.0"
+dependencies = [
+ "criterion",
+ "rstest",
+]
+
+[[package]]
 name = "aoc_2022_01"
 version = "1.0.0"
 dependencies = [
