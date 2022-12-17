@@ -28,6 +28,7 @@ Hardware: `MacBook Pro (14-inch, 2021), Apple M1 Pro`
 | 12  | Hill Climbing Algorithm | ~20 min[^bfs] |   😛    |
 | 13  | Distress Signal         |        392 μs |   😕    |
 | 14  | Regolith Reservoir      |        133 µs |   🙂    |
+| 15  | Beacon Exclusion Zone   |       4.28 µs |   😎    |
 
 [^bfs]: via BFS, as in [Big Friendly Sharpie](/2022/days/12-hill-climbing-algorithm/nope.jpg)
 

@@ -1,6 +1,6 @@
 [workspace]
 
-members = ["days/*"]
+members = ["days/*", "utils"]
 exclude = ["days/12-hill-climbing-algorithm"]
 
 [workspace.package]
