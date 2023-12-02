@@ -15,7 +15,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | Day | Name                    |          Time | Feeling |
 | :-: | :---------------------- | ------------: | :-----: |
 | 01  | Trebuchet?!             |         33 μs |   🙂    |
-| 01  | Cube Conundrum          |       23.6 μs |   😎    |
+| 02  | Cube Conundrum          |       23.6 μs |   😎    |
 
 
 ### 2022
@@ -40,7 +40,7 @@ Hardware: `MacBook Pro (14-inch, 2021), Apple M1 Pro`
 | 14  | Regolith Reservoir      |        133 µs |   🙂    |
 | 15  | Beacon Exclusion Zone   |       4.28 µs |   😎    |
 
-[^bfs]: via BFS, as in [Big Friendly Sharpie](/2022/days/12-hill-climbing-algorithm/nope.jpg)
+[^bfs]: via BFS, as in [Big Friendly Sharpie](https://github.com/remmycat/advent-of-code-rs/blob/main/2022/days/12-hill-climbing-algorithm/nope.jpg)
 
 ### 2021
 
