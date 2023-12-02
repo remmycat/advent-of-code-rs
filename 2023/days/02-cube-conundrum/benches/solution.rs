@@ -1,4 +1,4 @@
-use aoc_2023_01::solve;
+use aoc_2023_02::solve;
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
 use std::hint::black_box;
 

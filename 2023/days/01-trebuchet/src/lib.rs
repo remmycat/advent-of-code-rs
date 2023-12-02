@@ -43,7 +43,7 @@ fn check_spelled_digit(tri: &[u8], quad: Option<&[u8]>, quint: Option<&[u8]>) ->
 	})
 }
 
-fn find_first_digit_or_spelled(line: &[u8], rev: bool) -> (usize, usize) {
+fn find_first_digits(line: &[u8], rev: bool) -> (usize, usize) {
 	let mut first_digit_or_spelled: Option<usize> = None;
 	let mut first_digit: Option<usize> = None;
 
@@ -124,8 +124,8 @@ fn find_first_digit_or_spelled(line: &[u8], rev: bool) -> (usize, usize) {
 }
 
 fn get_spelled_calibration_value(line: &[u8]) -> (usize, usize) {
-	let (tens, tens_spelled) = find_first_digit_or_spelled(line, false);
-	let (ones, ones_spelled) = find_first_digit_or_spelled(line, true);
+	let (tens, tens_spelled) = find_first_digits(line, false);
+	let (ones, ones_spelled) = find_first_digits(line, true);
 
 	(tens * 10 + ones, tens_spelled * 10 + ones_spelled)
 }
