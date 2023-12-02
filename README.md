@@ -3,6 +3,7 @@
 ## Benchmarks
 
 Benchmarks are done using criterion.
+The solvers always provide a solution to both parts of the day's puzzle in one go, and receive the input as an in-memory string or bytes (depending on what I preferred for that day).
 
 Emojis reflect my feeling on the time and if it's improvable, based on intuition or other people's submissions.
 
