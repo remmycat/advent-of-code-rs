@@ -35,6 +35,7 @@ dependencies = [
 name = "aoc-2023-02"
 version = "1.0.0"
 dependencies = [
+ "aoc_2023_utils",
  "criterion",
  "rstest",
 ]

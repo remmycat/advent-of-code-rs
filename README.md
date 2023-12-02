@@ -15,6 +15,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | Day | Name                    |          Time | Feeling |
 | :-: | :---------------------- | ------------: | :-----: |
 | 01  | Trebuchet?!             |         33 μs |   🙂    |
+| 01  | Cube Conundrum          |       23.6 μs |   😎    |
 
 
 ### 2022
