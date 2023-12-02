@@ -32,11 +32,11 @@ fn solve(input: &str) -> Solution {
 		.fold(
 			(0, 0),
 			|(total_area, total_ribbon), Measurements(l, w, h)| {
-				let side_areas = vec![l * w, l * h, w * h];
+				let side_areas = [l * w, l * h, w * h];
 				let min_side = side_areas.iter().min().unwrap();
 				let area = 2 * side_areas.iter().sum::<u128>() + min_side;
 
-				let side_circumferences = vec![2 * (l + w), 2 * (l + h), 2 * (w + h)];
+				let side_circumferences = [2 * (l + w), 2 * (l + h), 2 * (w + h)];
 				let min_circumference = side_circumferences.iter().min().unwrap();
 				let ribbon = min_circumference + l * w * h;
 

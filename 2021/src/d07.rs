@@ -21,7 +21,6 @@ pub fn solve(input: &str) -> Solution {
 	// alt analytic solution: calculate fuel for position at median
 	// found by myself
 	let lowest_cost_misunderstood = (0..*max)
-		.into_iter()
 		.map(|pos| nums.iter().map(|num| (*num - pos).abs()).sum())
 		.min()
 		.unwrap();
@@ -29,7 +28,6 @@ pub fn solve(input: &str) -> Solution {
 	// alt analytic solution: (num_crabs - 2*(num_values_smaller_than_mean))/(2*num_crabs)
 	// by https://www.reddit.com/r/adventofcode/comments/rav728/comment/hnkvnzr/
 	let lowest_cost_understood = (0..*max)
-		.into_iter()
 		.map(|pos| nums.iter().map(|num| fuel_sum((*num - pos).abs())).sum())
 		.min()
 		.unwrap();

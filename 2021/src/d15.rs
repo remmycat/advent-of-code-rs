@@ -146,7 +146,6 @@ pub fn solve(input: &str) -> Solution {
 	let huge_end = huge_x_size * huge_y_size - 1;
 
 	let huge_cave_map: Vec<u8> = (0..=huge_end)
-		.into_iter()
 		.map(|xy| {
 			let x = xy % huge_x_size;
 			let small_x = x % x_size;

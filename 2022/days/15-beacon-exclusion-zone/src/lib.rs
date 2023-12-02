@@ -1,5 +1,3 @@
-use std::iter::once;
-
 use aoc_2022_utils::ascii_int::parse_int;
 
 use crate::range_set::IntRangeSet;
@@ -213,24 +211,21 @@ pub fn solve(input: &[u8], y_check: isize, search_scope: isize) -> Solution {
 		.flatten()
 		.filter(|p| search_range.contains(&p.x) && search_range.contains(&p.y))
 		// For completeness sake: the corner points could be missed by the intersection algorithm
-		.chain(
-			[
-				Point { x: 0, y: 0 },
-				Point {
-					x: 0,
-					y: search_scope,
-				},
-				Point {
-					x: search_scope,
-					y: 0,
-				},
-				Point {
-					x: search_scope,
-					y: search_scope,
-				},
-			]
-			.into_iter(),
-		)
+		.chain([
+			Point { x: 0, y: 0 },
+			Point {
+				x: 0,
+				y: search_scope,
+			},
+			Point {
+				x: search_scope,
+				y: 0,
+			},
+			Point {
+				x: search_scope,
+				y: search_scope,
+			},
+		])
 		.find(|p| {
 			sensors
 				.iter()

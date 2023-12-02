@@ -43,7 +43,6 @@ pub fn solve(input: &str) -> Solution {
 	let x_vel_min = 0;
 
 	let possible_x_vels: Vec<_> = (x_vel_min..=x_vel_max)
-		.into_iter()
 		.filter_map(|x_vel| {
 			let mut sim_x = 0;
 			let mut sim_vel = x_vel;
@@ -75,7 +74,6 @@ pub fn solve(input: &str) -> Solution {
 		.collect();
 
 	let possible_velocities = (0..=y_vel_max)
-		.into_iter()
 		.filter_map(|y_vel| {
 			let mut sim_y = 0;
 			let mut sim_vel = y_vel;

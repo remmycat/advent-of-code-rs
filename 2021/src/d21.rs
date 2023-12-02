@@ -132,7 +132,7 @@ fn dirac_round(memo: &mut DiracMemo, p1: DiracPlayer, p2: DiracPlayer) -> Univer
 
 pub fn solve(input: &str) -> Solution {
 	let mut die_rolls = 0;
-	let mut deterministic_die = (1..=100_u16).into_iter().cycle().map(|roll| {
+	let mut deterministic_die = (1..=100_u16).cycle().map(|roll| {
 		die_rolls += 1;
 		roll
 	});
