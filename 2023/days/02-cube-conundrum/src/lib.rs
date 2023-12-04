@@ -1,4 +1,4 @@
-use aoc_2023_utils::ascii_int::parse_uint;
+use aoc_2023_utils::ascii_int::parse_u8_unchecked;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Solution(usize, usize);
@@ -28,7 +28,7 @@ impl From<&[u8]> for CubeColor {
 
 struct CubesOfColor {
 	color: CubeColor,
-	count: usize,
+	count: u8,
 }
 
 impl From<&[u8]> for CubesOfColor {
@@ -42,16 +42,16 @@ impl From<&[u8]> for CubesOfColor {
 
 		Self {
 			color: CubeColor::from(color_str),
-			count: parse_uint(digits),
+			count: parse_u8_unchecked(digits),
 		}
 	}
 }
 
 #[derive(Debug, Default)]
 struct CubeSet {
-	reds: usize,
-	greens: usize,
-	blues: usize,
+	reds: u8,
+	greens: u8,
+	blues: u8,
 }
 
 const SAMPLE_SET: CubeSet = CubeSet {
@@ -67,7 +67,7 @@ impl CubeSet {
 			&& self.blues <= SAMPLE_SET.blues
 	}
 	fn power(&self) -> usize {
-		self.reds * self.greens * self.blues
+		self.reds as usize * self.greens as usize * self.blues as usize
 	}
 }
 
