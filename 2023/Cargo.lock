@@ -49,6 +49,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "aoc-2023-04"
+version = "1.0.0"
+dependencies = [
+ "criterion",
+ "rstest",
+]
+
+[[package]]
 name = "aoc_2023_utils"
 version = "1.0.0"
 
