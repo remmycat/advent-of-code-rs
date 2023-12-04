@@ -18,7 +18,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 01  | Trebuchet?!             |         33 μs |   🙂    |
 | 02  | Cube Conundrum          |       23.0 μs |   😎    |
 | 03  | Gear Ratios             |         52 μs |   🙂    |
-| 04  | Scratchcards            |       38.4 μs |   🙂    |
+| 04  | Scratchcards            |        7.6 μs |   😎    |
 
 
 ### 2022

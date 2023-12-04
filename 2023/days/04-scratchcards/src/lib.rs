@@ -4,6 +4,7 @@ pub struct Solution(usize, usize);
 const EMPTY: [bool; 100] = [false; 100];
 
 fn parse_2_digit_uint(input: &[u8]) -> usize {
+	// println!("{}", String::from_utf8(input.to_vec()).unwrap());
 	(if input[0] == b' ' {
 		input[1] - b'0'
 	} else {
@@ -16,41 +17,49 @@ pub fn solve(input: &[u8]) -> Solution {
 	let mut card_numbers: [bool; 100];
 	let mut points_won = 0;
 
-	for (index, line) in input
-		.split(|b| *b == b'\n')
-		.filter(|line| !line.is_empty())
-		.enumerate()
-	{
+	let input_width = input
+		.iter()
+		.position(|b| *b == b'\n')
+		.expect("input must have newline")
+		+ 1;
+	let line_prefix_width = input
+		.iter()
+		.position(|b| *b == b':')
+		.expect("input must have colon")
+		+ 2;
+	let pipe_position = input
+		.iter()
+		.position(|b| *b == b'|')
+		.expect("input must have pipe");
+	let after_pipe = pipe_position + 2;
+	let win_nrs = (pipe_position - line_prefix_width) / 3;
+	let card_nrs = (input_width - after_pipe) / 3;
+
+	for (index, line) in input.chunks(input_width).enumerate() {
 		let game = index + 1;
 		card_numbers = EMPTY;
 
 		let game_copies = copies_won[game] + 1;
 		copies_won[game] = game_copies;
 
-		let line = line
-			.split(|b| *b == b':')
-			.nth(1)
-			.expect("bad input, expected data after :");
-
-		let mut parts = line.split(|b| *b == b'|');
-		let (wins, nums) = (
-			&parts.next().expect("bad input, expected win numbers")[1..],
-			&parts.next().expect("bad input, expected card numbers")[1..],
-		);
-
-		for win_nr in wins.chunks(3).map(parse_2_digit_uint) {
+		for win_index in 0..win_nrs {
+			let span_start = line_prefix_width + 3 * win_index;
+			let span_end = span_start + 2;
+			let win_nr = parse_2_digit_uint(&line[span_start..span_end]);
 			card_numbers[win_nr] = true;
 		}
 
-		let winning = nums
-			.chunks(3)
-			.map(parse_2_digit_uint)
+		let winning = (0..card_nrs)
+			.map(|idx| {
+				let span_start = after_pipe + 3 * idx;
+				let span_end = span_start + 2;
+				parse_2_digit_uint(&line[span_start..span_end])
+			})
 			.filter(|num| card_numbers[*num])
 			.count();
 
-		if winning > 0 {
-			points_won += 2_usize.pow((winning - 1) as u32);
-		}
+		// manual power of 2
+		points_won += 1_usize << winning >> 1;
 
 		for won_copy in (game + 1..).take(winning) {
 			copies_won[won_copy] += game_copies
