@@ -13,12 +13,13 @@ Time precision depends on the variance measured during the benchmarks.
 
 Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 
-| Day | Name                    |          Time | Feeling |
-| :-: | :---------------------- | ------------: | :-----: |
-| 01  | Trebuchet?!             |         33 μs |   🙂    |
-| 02  | Cube Conundrum          |       23.0 μs |   😎    |
-| 03  | Gear Ratios             |         52 μs |   🙂    |
-| 04  | Scratchcards            |        7.6 μs |   😎    |
+| Day | Name                            |     Time | Feeling |
+| :-: | :------------------------------ | -------: | :-----: |
+| 01  | Trebuchet?!                     |    33 μs |   🙂    |
+| 02  | Cube Conundrum                  |  23.0 μs |   😎    |
+| 03  | Gear Ratios                     |    52 μs |   🙂    |
+| 04  | Scratchcards                    |   7.6 μs |   😎    |
+| 05  | If You Give A Seed A Fertilizer |  17.7 μs |   🙂    |
 
 
 ### 2022

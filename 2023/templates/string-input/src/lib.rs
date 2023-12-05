@@ -1,5 +1,5 @@
 #[derive(Debug, PartialEq, Eq)]
-pub struct Solution(u64, u64);
+pub struct Solution(usize, usize);
 
 pub fn solve(_input: &str) -> Solution {
 	Solution(0, 0)
