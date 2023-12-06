@@ -20,6 +20,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 03  | Gear Ratios                     |    52 μs |   🙂    |
 | 04  | Scratchcards                    |   7.6 μs |   😎    |
 | 05  | If You Give A Seed A Fertilizer |  17.7 μs |   🙂    |
+| 06  | Wait For It                     |   155 ns |   😎    |
 
 
 ### 2022

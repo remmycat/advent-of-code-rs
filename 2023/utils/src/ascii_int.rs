@@ -26,6 +26,19 @@ pub fn parse_uint(digits: &[u8]) -> usize {
 }
 
 /// Parse `usize` from ascii digit bytes.
+/// Skips non-digit chars
+#[inline(always)]
+pub fn parse_uint_coerce(digits: &[u8]) -> usize {
+	digits.iter().fold(0, |dig, b| {
+		if b.is_ascii_digit() {
+			dig * 10 + b_digit_usize_unchecked(*b)
+		} else {
+			dig
+		}
+	})
+}
+
+/// Parse `usize` from ascii digit bytes.
 /// Panics on unexpected bytes (non-digits).
 #[inline(always)]
 pub fn parse_uint_unchecked(digits: &[u8]) -> usize {
