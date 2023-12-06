@@ -1,28 +1,28 @@
-use aoc_2023_utils::{ascii_int::parse_uint_unchecked, iteration::expect_n};
+use aoc_2023_utils::{ascii_int::parse_uint_unchecked, iteration::expect_n, range::Range};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Solution(usize, usize);
 
 #[derive(Debug)]
 struct Mapping {
-	range: (usize, usize),
+	range: Range,
 	offset: isize,
 }
 
-enum RangeMatch {
-	Full {
-		mapped: (usize, usize),
-	},
-	PartialOneSide {
-		mapped: (usize, usize),
-		side: (usize, usize),
-	},
-	PartialTwoSides {
-		mapped: (usize, usize),
-		side_1: (usize, usize),
-		side_2: (usize, usize),
-	},
-}
+// enum RangeMatch {
+// 	Full {
+// 		mapped: (usize, usize),
+// 	},
+// 	PartialOneSide {
+// 		mapped: (usize, usize),
+// 		side: (usize, usize),
+// 	},
+// 	PartialTwoSides {
+// 		mapped: (usize, usize),
+// 		side_1: (usize, usize),
+// 		side_2: (usize, usize),
+// 	},
+// }
 
 impl Mapping {
 	fn parse(line: &[u8]) -> Self {
@@ -33,77 +33,81 @@ impl Mapping {
 
 		Mapping {
 			offset: dest_start as isize - source_start as isize,
-			range: (source_start, source_start + len - 1),
+			range: Range {
+				start: source_start,
+				end: source_start + len - 1,
+			},
 		}
 	}
 
-	fn matches(&self, num: usize) -> bool {
-		num >= self.range.0 && num <= self.range.1
-	}
+	// fn mapped_intersection(&self, other: &Range) -> Option<RangeIntersection> {
+	// 	self.range
+	// 		.intersection_with_rest(other)
+	// 		.map(|mut intersection| {
+	// 			intersection.intersection_mut().apply_offset(self.offset);
+	// 			intersection
+	// 		})
+	// }
 
-	fn map_range(&self, range: &(usize, usize)) -> Option<RangeMatch> {
-		if range.1 < self.range.0 || range.0 > self.range.1 {
-			None
-		} else if range.0 >= self.range.0 && range.1 <= self.range.1 {
-			Some(RangeMatch::Full {
-				mapped: (self.apply(range.0), self.apply(range.1)),
-			})
-		} else if range.0 >= self.range.0 && range.1 > self.range.1 {
-			// leftover to the right
-			Some(RangeMatch::PartialOneSide {
-				mapped: (self.apply(range.0), self.apply(self.range.1)),
-				side: (self.range.1 + 1, range.1),
-			})
-		} else if range.0 < self.range.0 && range.1 <= self.range.1 {
-			// leftover to the left
-			Some(RangeMatch::PartialOneSide {
-				side: (range.0, self.range.0 - 1),
-				mapped: (self.apply(self.range.0), self.apply(range.1)),
-			})
-		} else {
-			// leftover to both sides
-			Some(RangeMatch::PartialTwoSides {
-				side_1: (range.0, self.range.0 - 1),
-				mapped: (self.apply(self.range.0), self.apply(self.range.1)),
-				side_2: (self.range.1 + 1, range.1),
-			})
-		}
-	}
+	// fn matches(&self, num: usize) -> bool {
+	// 	num >= self.range.0 && num <= self.range.1
+	// }
 
-	fn apply(&self, num: usize) -> usize {
-		(num as isize + self.offset) as usize
-	}
+	// fn map_range(&self, range: &Range) -> Option<RangeMatch> {
+	// 	if range.1 < self.range.0 || range.0 > self.range.1 {
+	// 		None
+	// 	} else if range.0 >= self.range.0 && range.1 <= self.range.1 {
+	// 		Some(RangeMatch::Full {
+	// 			mapped: (self.apply(range.0), self.apply(range.1)),
+	// 		})
+	// 	} else if range.0 >= self.range.0 && range.1 > self.range.1 {
+	// 		// leftover to the right
+	// 		Some(RangeMatch::PartialOneSide {
+	// 			mapped: (self.apply(range.0), self.apply(self.range.1)),
+	// 			side: (self.range.1 + 1, range.1),
+	// 		})
+	// 	} else if range.0 < self.range.0 && range.1 <= self.range.1 {
+	// 		// leftover to the left
+	// 		Some(RangeMatch::PartialOneSide {
+	// 			side: (range.0, self.range.0 - 1),
+	// 			mapped: (self.apply(self.range.0), self.apply(range.1)),
+	// 		})
+	// 	} else {
+	// 		// leftover to both sides
+	// 		Some(RangeMatch::PartialTwoSides {
+	// 			side_1: (range.0, self.range.0 - 1),
+	// 			mapped: (self.apply(self.range.0), self.apply(self.range.1)),
+	// 			side_2: (self.range.1 + 1, range.1),
+	// 		})
+	// 	}
+	// }
+
+	// fn apply(&self, num: usize) -> usize {
+	// 	(num as isize + self.offset) as usize
+	// }
 }
 
-fn apply_mappings(mappings: &[Mapping], nums: &mut [usize], ranges: &mut Vec<(usize, usize)>) {
+fn apply_mappings(mappings: &[Mapping], nums: &mut [usize], ranges: &mut Vec<Range>) {
 	for num in nums.iter_mut() {
-		if let Some(mapping) = mappings.iter().find(|m| m.matches(*num)) {
-			*num = mapping.apply(*num)
+		if let Some(mapping) = mappings.iter().find(|m| m.range.contains(*num)) {
+			*num = (*num as isize + mapping.offset) as usize;
 		}
 	}
 
-	let mut mapped_ranges: Vec<(usize, usize)> = Vec::with_capacity(ranges.len());
+	let mut mapped_ranges: Vec<Range> = Vec::with_capacity(ranges.len());
 
 	while let Some(range) = ranges.pop() {
-		if let Some(range_match) = mappings
+		if let Some(mapping) = mappings
 			.iter()
-			.find_map(|mapping| mapping.map_range(&range))
+			.find(|mapping| mapping.range.intersects_with(&range))
 		{
-			match range_match {
-				RangeMatch::Full { mapped } => mapped_ranges.push(mapped),
-				RangeMatch::PartialOneSide { mapped, side } => {
-					mapped_ranges.push(mapped);
-					ranges.push(side);
-				}
-				RangeMatch::PartialTwoSides {
-					mapped,
-					side_1,
-					side_2,
-				} => {
-					mapped_ranges.push(mapped);
-					ranges.push(side_1);
-					ranges.push(side_2);
-				}
+			let intersection = mapping.range.intersection_with_rest(&range).unwrap();
+			mapped_ranges.push(intersection.range.offset(mapping.offset));
+			if let Some(left) = intersection.left_rest {
+				ranges.push(left);
+			}
+			if let Some(right) = intersection.right_rest {
+				ranges.push(right);
 			}
 		} else {
 			// no mapping = stays the same
@@ -125,9 +129,9 @@ pub fn solve(input: &[u8]) -> Solution {
 		.collect();
 
 	let mut num_iter = nums.iter();
-	let mut ranges: Vec<(usize, usize)> = vec![];
+	let mut ranges: Vec<Range> = vec![];
 	while let (Some(a), Some(b)) = (num_iter.next(), num_iter.next()) {
-		ranges.push((*a, *a + *b - 1));
+		ranges.push((*a, *a + *b - 1).into());
 	}
 
 	let mut block_mappings: Vec<Mapping> = vec![];
@@ -144,8 +148,8 @@ pub fn solve(input: &[u8]) -> Solution {
 	nums.sort_unstable();
 	let lowest_location = nums[0];
 
-	ranges.sort_unstable_by_key(|range| range.0);
-	let lowest_range_location = ranges[0].0;
+	ranges.sort_unstable_by_key(|range| range.start);
+	let lowest_range_location = ranges[0].start;
 
 	Solution(lowest_location, lowest_range_location)
 }
