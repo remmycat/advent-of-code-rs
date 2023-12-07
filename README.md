@@ -21,7 +21,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 04  | Scratchcards                    |   7.6 μs |   😎    |
 | 05  | If You Give A Seed A Fertilizer |  17.7 μs |   🙂    |
 | 06  | Wait For It                     |   155 ns |   😎    |
-| 07  | Camel Cards                     |  63.4 μs |   🙂    |
+| 07  | Camel Cards                     |    42 μs |   😎    |
 
 
 ### 2022

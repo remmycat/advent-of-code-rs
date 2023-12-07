@@ -158,6 +158,7 @@ mod tests {
 	#[rstest]
 	#[case(include_bytes!("../inputs/example.txt"), Solution(35, 46))]
 	#[case(include_bytes!("../inputs/personal.txt"), Solution(551761867,57451709))]
+	#[case(include_bytes!("../inputs/friend.txt"), Solution(323142486,79874951))]
 	fn solution(#[case] input: &[u8], #[case] expected: Solution) {
 		assert_eq!(solve(input), expected);
 	}

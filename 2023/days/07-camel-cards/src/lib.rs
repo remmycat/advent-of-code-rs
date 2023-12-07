@@ -12,14 +12,10 @@ struct Hand {
 impl Hand {
 	fn get_card_value(card: u8) -> u8 {
 		match card {
-			b'2' => 1, // I'm so sorry, it's faster, I swear
-			b'3' => 2,
-			b'4' => 3,
-			b'5' => 4,
-			b'6' => 5,
-			b'7' => 6,
-			b'8' => 7,
-			b'9' => 8,
+			b if b.is_ascii_digit() => card - b'1',
+			// b'2' => 1, // I'm so sorry, it's faster, I swear
+			// b'3' => 2,
+			// ...
 			b'T' => 9,
 			b'J' => 10,
 			b'Q' => 11,
@@ -29,16 +25,23 @@ impl Hand {
 		}
 	}
 
+	// encode 5s,4s,3s,pairs as 5 bits (only pairs can be 2 bits)
+	fn collections_score(collections: [u8; 6]) -> u8 {
+		let mut score = collections[5] << 4;
+		score |= collections[4] << 3;
+		score |= collections[3] << 2;
+		score | collections[2]
+	}
+
 	fn parse(line: &[u8]) -> Hand {
-		let cards: [u8; 5] = [line[0], line[1], line[2], line[3], line[4]];
 		let bet = parse_uint(&line[6..]);
 
 		let mut card_amts = [0_u8; 14];
 		let mut base_score: u32 = 0; // right 20 bits are base_score
 		let mut base_score_joker: u32 = 0;
 
-		for card in cards {
-			let card_value = Self::get_card_value(card);
+		for card in line[..5].iter() {
+			let card_value = Self::get_card_value(*card);
 			// base score: each card value, leftmost is best
 			base_score = (base_score << 4) | card_value as u32;
 
@@ -52,40 +55,31 @@ impl Hand {
 		let joker_amt = card_amts[0] as usize;
 		let mut highest_non_joker_amt: usize = 0;
 
-		let mut pairs = [0_u8; 6];
+		let mut collections = [0_u8; 6];
 
 		for (card_index, card_amt) in card_amts.into_iter().enumerate() {
 			let card_amt = card_amt as usize;
-			pairs[card_amt] += 1;
+			collections[card_amt] += 1;
 
 			if card_index > 0 && card_amt > highest_non_joker_amt {
 				highest_non_joker_amt = card_amt
 			}
 		}
 
-		let mut pair_score: u32 = 0; // 12 bits pair scores (can be reduced to 8 bits, there's 0s at the end)
-		let mut pair_score_joker: u32 = 0;
+		let pair_score = Self::collections_score(collections);
 
-		for (pair_size, pair_amt) in pairs.into_iter().enumerate().skip(2) {
-			// encodes score as [5 of a kind amount][4 of a kind amt]...
-			pair_score |= (pair_amt as u32) << (pair_size * 2);
-		}
-
-		if joker_amt > 0 {
-			pairs[highest_non_joker_amt] -= 1;
-			pairs[joker_amt] -= 1;
-			pairs[highest_non_joker_amt + joker_amt] += 1;
-
-			for (pair_size, pair_amt) in pairs.into_iter().enumerate().skip(2) {
-				pair_score_joker |= (pair_amt as u32) << (pair_size * 2);
-			}
+		let pair_score_joker = if joker_amt == 0 || joker_amt == 5 {
+			pair_score
 		} else {
-			pair_score_joker = pair_score
-		}
+			collections[highest_non_joker_amt] -= 1;
+			collections[joker_amt] -= 1;
+			collections[highest_non_joker_amt + joker_amt] += 1;
+			Self::collections_score(collections)
+		};
 
 		Hand {
-			score: base_score | pair_score << 20,
-			score_joker: base_score_joker | pair_score_joker << 20,
+			score: base_score | (pair_score as u32) << 20,
+			score_joker: base_score_joker | (pair_score_joker as u32) << 20,
 			bet,
 		}
 	}
@@ -99,7 +93,7 @@ pub fn solve(input: &[u8]) -> Solution {
 		.map(Hand::parse)
 		.collect();
 
-	hands.sort_unstable_by_key(|hand| hand.score);
+	hands.sort_unstable_by_key(|hand| hand.score); // ~8 us for sorting
 
 	let winnings = hands
 		.iter()
@@ -107,7 +101,7 @@ pub fn solve(input: &[u8]) -> Solution {
 		.map(|(index, hand)| hand.bet * (index + 1))
 		.sum();
 
-	hands.sort_unstable_by_key(|hand| hand.score_joker);
+	hands.sort_unstable_by_key(|hand| hand.score_joker); // ~8 us for sorting
 
 	let winnings_joker = hands
 		.iter()
