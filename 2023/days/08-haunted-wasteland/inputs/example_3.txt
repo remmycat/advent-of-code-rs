@@ -1,0 +1,12 @@
+LR
+
+NNA = (NNB, XXX)
+NNB = (XXX, NNZ)
+NNZ = (NNB, XXX)
+OOA = (OOB, XXX)
+OOB = (OOC, OOC)
+OOC = (OOZ, OOZ)
+OOZ = (OOB, OOB)
+XXX = (XXX, XXX)
+AAA = (ZZZ, ZZZ)
+ZZZ = (ZZZ, ZZZ)
