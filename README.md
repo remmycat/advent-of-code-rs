@@ -22,6 +22,8 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 05  | If You Give A Seed A Fertilizer |  17.7 μs |   🙂    |
 | 06  | Wait For It                     |   155 ns |   😎    |
 | 07  | Camel Cards                     |    42 μs |   😎    |
+| 08  | WIP                             |          |         |
+| 09  | Mirage Maintenance              |  42.6 μs |   🙂    |
 
 
 ### 2022
