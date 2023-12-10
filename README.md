@@ -24,7 +24,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 07  | Camel Cards                     |    42 μs |   😎    |
 | 08  | WIP                             |          |         |
 | 09  | Mirage Maintenance              |  42.6 μs |   🙂    |
-| 10  | Pipe Maze                       |   262 μs |   🙂    |
+| 10  | Pipe Maze                       |    46 μs |   😎    |
 
 
 ### 2022

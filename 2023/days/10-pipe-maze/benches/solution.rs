@@ -1,4 +1,4 @@
-use aoc_2023_10::solve;
+use aoc_2023_10::{raycast, shoelace_picks};
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
 use std::hint::black_box;
 
@@ -21,8 +21,12 @@ fn criterion_benchmark(c: &mut Criterion) {
 
 		group.throughput(Throughput::Bytes(bytes as u64));
 
-		group.bench_with_input(BenchmarkId::new("solve", id), input, |b, file| {
-			b.iter(|| solve(black_box(file)))
+		group.bench_with_input(BenchmarkId::new("raycast", id), input, |b, file| {
+			b.iter(|| raycast::solve(black_box(file)))
+		});
+
+		group.bench_with_input(BenchmarkId::new("shoelace_picks", id), input, |b, file| {
+			b.iter(|| shoelace_picks::solve(black_box(file)))
 		});
 	}
 
