@@ -1,0 +1,16 @@
+[package]
+name = "aoc-2023-14"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependenvies]
+hashbrown = "0.14"
+
+[dev-dependencies]
+rstest.workspace = true
+criterion.workspace = true
+
+[[bench]]
+name = "solution"
+harness = false

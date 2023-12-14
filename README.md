@@ -22,11 +22,13 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 05  | If You Give A Seed A Fertilizer |  17.7 μs |   🙂    |
 | 06  | Wait For It                     |   155 ns |   😎    |
 | 07  | Camel Cards                     |    42 μs |   😎    |
-| 08  | WIP                             |          |         |
+| 08  |                                 |          |         |
 | 09  | Mirage Maintenance              |  42.6 μs |   🙂    |
 | 10  | Pipe Maze                       |    46 μs |   😎    |
 | 11  | Cosmic Expansion                |   9.5 μs |   🌈    |
 | 12  | Hot Springs                     |  22.3 ms |   🤔    |
+| 13  |                                 |          |         |
+| 14  | Parabolic Reflector Dish        |  24.3 ms |   😕    |
 
 
 ### 2022
