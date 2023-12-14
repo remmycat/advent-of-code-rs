@@ -1,8 +1,12 @@
 [package]
-name = "aoc-2023-11"
+name = "aoc-2023-12"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+
+[dependencies]
+aoc_2023_utils = { path = "../../utils" }
+hashbrown = "0.14"
 
 [dev-dependencies]
 rstest.workspace = true
