@@ -1,0 +1,13 @@
+[package]
+name = "day-16-the-floor-will-be-lava"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dev-dependencies]
+rstest.workspace = true
+criterion.workspace = true
+
+[[bench]]
+name = "solution"
+harness = false

@@ -30,6 +30,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 13  |                                 |          |         |
 | 14  | Parabolic Reflector Dish        |  24.3 ms |   😕    |
 | 15  | Lens Library                    |    69 µs |   🙂    |
+| 16  | The Floor Will Be Lava<br>(brute force part 2) |  37.6 ms |   😕    |
 
 
 ### 2022
