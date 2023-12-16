@@ -29,6 +29,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 12  | Hot Springs                     |  22.3 ms |   🤔    |
 | 13  |                                 |          |         |
 | 14  | Parabolic Reflector Dish        |  24.3 ms |   😕    |
+| 15  | Lens Library                    |    69 µs |   🙂    |
 
 
 ### 2022
