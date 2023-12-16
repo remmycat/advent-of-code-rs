@@ -1,5 +1,5 @@
 [package]
-name = "aoc-2023-01"
+name = "day-01-trebuchet"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,5 +9,5 @@ rstest.workspace = true
 criterion.workspace = true
 
 [[bench]]
-name = "solution"
+name = "benchmarks"
 harness = false

@@ -1,11 +1,11 @@
 [package]
-name = "aoc-2023-12"
+name = "day-12-hot-springs"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
 [dependencies]
-aoc_2023_utils = { path = "../../utils" }
+aoc-utils = { path = "../../utils" }
 hashbrown = "0.14"
 
 [dev-dependencies]
@@ -13,5 +13,5 @@ rstest.workspace = true
 criterion.workspace = true
 
 [[bench]]
-name = "solution"
+name = "benchmarks"
 harness = false

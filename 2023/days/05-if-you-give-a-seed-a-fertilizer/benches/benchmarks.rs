@@ -1,5 +1,5 @@
-use aoc_2023_01::solve;
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
+use day_05_if_you_give_a_seed_a_fertilizer::solve;
 use std::hint::black_box;
 
 const NAME: &str = env!("CARGO_PKG_NAME");

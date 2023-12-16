@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 use std::fmt;
 
-use aoc_2023_utils::{ascii_int::parse_uint_unchecked, iteration::expect_n};
+use aoc_utils::{ascii_int::parse_uint_unchecked, iteration::expect_n};
 use hashbrown::HashMap;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -203,19 +203,43 @@ mod tests {
 	use rstest::rstest;
 
 	#[rstest]
-	#[case::example(include_bytes!("../inputs/example.txt"), Solution(21,525152))]
-	#[case::personal(include_bytes!("../inputs/personal.txt"), Solution(8193,45322533163795))]
+	#[case::example(
+		include_bytes!("../inputs/example.txt"),
+		Solution(21,525152),
+	)]
+	#[case::personal(
+		include_bytes!("../inputs/personal.txt"),
+		Solution(8193,45322533163795),
+	)]
 	fn solution(#[case] input: &[u8], #[case] expected: Solution) {
 		assert_eq!(solve(input), expected);
 	}
 
 	#[rstest]
-	#[case("???.### 1,1,3", (1,1))]
-	#[case(".??..??...?##. 1,1,3", (4, 16384))]
-	#[case("?#?#?#?#?#?#?#? 1,3,1,6", (1,1))]
-	#[case("????.#...#... 4,1,1", (1, 16))]
-	#[case("????.######..#####. 1,6,5", (4, 2500))]
-	#[case("?###???????? 3,2,1", (10, 506250))]
+	#[case(
+		"???.### 1,1,3",
+		(1,1),
+	)]
+	#[case(
+		".??..??...?##. 1,1,3",
+		(4, 16384),
+	)]
+	#[case(
+		"?#?#?#?#?#?#?#? 1,3,1,6",
+		(1,1),
+	)]
+	#[case(
+		"????.#...#... 4,1,1",
+		(1, 16),
+	)]
+	#[case(
+		"????.######..#####. 1,6,5",
+		(4, 2500),
+	)]
+	#[case(
+		"?###???????? 3,2,1",
+		(10, 506250),
+	)]
 	fn count_arrangements_examples(#[case] input: &str, #[case] expected: (usize, usize)) {
 		let mut memo: PicrossArrangements = HashMap::new();
 		let (small, big) = PicrossState::parse_from_line_small_big(input.as_bytes());

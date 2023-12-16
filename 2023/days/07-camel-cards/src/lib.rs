@@ -1,4 +1,4 @@
-use aoc_2023_utils::ascii_int::parse_uint;
+use aoc_utils::ascii_int::parse_uint;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Solution(usize, usize);
@@ -118,8 +118,14 @@ mod tests {
 	use rstest::rstest;
 
 	#[rstest]
-	#[case(include_bytes!("../inputs/example.txt"), Solution(6440,5905))]
-	#[case(include_bytes!("../inputs/personal.txt"), Solution(248453531,248781813))]
+	#[case::example(
+		include_bytes!("../inputs/example.txt"),
+		Solution(6440,5905),
+	)]
+	#[case::personal(
+		include_bytes!("../inputs/personal.txt"),
+		Solution(248453531,248781813),
+	)]
 	fn solution(#[case] input: &[u8], #[case] expected: Solution) {
 		assert_eq!(solve(input), expected);
 	}

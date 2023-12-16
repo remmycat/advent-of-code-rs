@@ -1,10 +1,10 @@
 [package]
-name = "aoc-2023-14"
+name = "day-14-parabolic-reflector-dish"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
-[dependenvies]
+[dependencies]
 hashbrown = "0.14"
 
 [dev-dependencies]
@@ -12,5 +12,5 @@ rstest.workspace = true
 criterion.workspace = true
 
 [[bench]]
-name = "solution"
+name = "benchmarks"
 harness = false

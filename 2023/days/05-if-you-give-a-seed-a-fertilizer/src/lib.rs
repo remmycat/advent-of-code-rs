@@ -1,4 +1,4 @@
-use aoc_2023_utils::{ascii_int::parse_uint_unchecked, iteration::expect_n};
+use aoc_utils::{ascii_int::parse_uint_unchecked, iteration::expect_n};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Solution(usize, usize);
@@ -156,9 +156,18 @@ mod tests {
 	use rstest::rstest;
 
 	#[rstest]
-	#[case(include_bytes!("../inputs/example.txt"), Solution(35, 46))]
-	#[case(include_bytes!("../inputs/personal.txt"), Solution(551761867,57451709))]
-	#[case(include_bytes!("../inputs/friend.txt"), Solution(323142486,79874951))]
+	#[case::example(
+		include_bytes!("../inputs/example.txt"),
+		Solution(35, 46),
+	)]
+	#[case::personal(
+		include_bytes!("../inputs/personal.txt"),
+		Solution(551761867,57451709),
+	)]
+	#[case::friend(
+		include_bytes!("../inputs/friend.txt"),
+		Solution(323142486,79874951),
+	)]
 	fn solution(#[case] input: &[u8], #[case] expected: Solution) {
 		assert_eq!(solve(input), expected);
 	}

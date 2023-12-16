@@ -1,5 +1,5 @@
-use aoc_2023_05::solve;
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
+use day_00::solve;
 use std::hint::black_box;
 
 const NAME: &str = env!("CARGO_PKG_NAME");

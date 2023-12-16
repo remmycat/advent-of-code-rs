@@ -1,5 +1,5 @@
-use aoc_2023_10::{raycast, shoelace_picks};
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
+use day_10_pipe_maze::{raycast, shoelace_picks};
 use std::hint::black_box;
 
 const NAME: &str = env!("CARGO_PKG_NAME");

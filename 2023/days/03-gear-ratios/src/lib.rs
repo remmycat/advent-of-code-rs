@@ -144,8 +144,14 @@ mod tests {
 	use rstest::rstest;
 
 	#[rstest]
-	#[case(include_bytes!("../inputs/example.txt"), Solution(4361,467835))]
-	#[case(include_bytes!("../inputs/personal.txt"), Solution(537832,81939900))]
+	#[case::example(
+		include_bytes!("../inputs/example.txt"),
+		Solution(4361,467835),
+	)]
+	#[case::personal(
+		include_bytes!("../inputs/personal.txt"),
+		Solution(537832,81939900),
+	)]
 	fn solution(#[case] input: &[u8], #[case] expected: Solution) {
 		assert_eq!(solve(input), expected);
 	}

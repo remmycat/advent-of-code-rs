@@ -42,119 +42,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7079075b41f533b8c61d2a4d073c4676e1f8b249ff94a393b0595db304e0dd87"
 
 [[package]]
-name = "aoc-2023-01"
-version = "1.0.0"
-dependencies = [
- "criterion",
- "rstest",
-]
-
-[[package]]
-name = "aoc-2023-02"
-version = "1.0.0"
-dependencies = [
- "aoc_2023_utils",
- "criterion",
- "rstest",
-]
-
-[[package]]
-name = "aoc-2023-03"
-version = "1.0.0"
-dependencies = [
- "criterion",
- "rstest",
-]
-
-[[package]]
-name = "aoc-2023-04"
-version = "1.0.0"
-dependencies = [
- "criterion",
- "rstest",
-]
-
-[[package]]
-name = "aoc-2023-05"
-version = "1.0.0"
-dependencies = [
- "aoc_2023_utils",
- "criterion",
- "rstest",
-]
-
-[[package]]
-name = "aoc-2023-06"
-version = "1.0.0"
-dependencies = [
- "aoc_2023_utils",
- "criterion",
- "rstest",
-]
-
-[[package]]
-name = "aoc-2023-07"
-version = "1.0.0"
-dependencies = [
- "aoc_2023_utils",
- "criterion",
- "rstest",
-]
-
-[[package]]
-name = "aoc-2023-09"
-version = "1.0.0"
-dependencies = [
- "aoc_2023_utils",
- "criterion",
- "rstest",
-]
-
-[[package]]
-name = "aoc-2023-10"
-version = "1.0.0"
-dependencies = [
- "aoc_2023_utils",
- "criterion",
- "rstest",
-]
-
-[[package]]
-name = "aoc-2023-11"
-version = "1.0.0"
-dependencies = [
- "criterion",
- "rstest",
-]
-
-[[package]]
-name = "aoc-2023-12"
-version = "1.0.0"
-dependencies = [
- "aoc_2023_utils",
- "criterion",
- "hashbrown",
- "rstest",
-]
-
-[[package]]
-name = "aoc-2023-14"
-version = "1.0.0"
-dependencies = [
- "criterion",
- "rstest",
-]
-
-[[package]]
-name = "aoc-2023-15"
-version = "1.0.0"
-dependencies = [
- "criterion",
- "rstest",
-]
-
-[[package]]
-name = "aoc_2023_utils"
+name = "aoc-utils"
 version = "1.0.0"
 
 [[package]]
@@ -265,6 +153,119 @@ checksum = "6b50826342786a51a89e2da3a28f1c32b06e387201bc2d19791f622c673706b1"
 dependencies = [
  "cast",
  "itertools",
+]
+
+[[package]]
+name = "day-01-trebuchet"
+version = "1.0.0"
+dependencies = [
+ "criterion",
+ "rstest",
+]
+
+[[package]]
+name = "day-02-cube-conundrum"
+version = "1.0.0"
+dependencies = [
+ "aoc-utils",
+ "criterion",
+ "rstest",
+]
+
+[[package]]
+name = "day-03-gear-ratios"
+version = "1.0.0"
+dependencies = [
+ "criterion",
+ "rstest",
+]
+
+[[package]]
+name = "day-04-scratchcards"
+version = "1.0.0"
+dependencies = [
+ "criterion",
+ "rstest",
+]
+
+[[package]]
+name = "day-05-if-you-give-a-seed-a-fertilizer"
+version = "1.0.0"
+dependencies = [
+ "aoc-utils",
+ "criterion",
+ "rstest",
+]
+
+[[package]]
+name = "day-06-wait-for-it"
+version = "1.0.0"
+dependencies = [
+ "aoc-utils",
+ "criterion",
+ "rstest",
+]
+
+[[package]]
+name = "day-07-camel-cards"
+version = "1.0.0"
+dependencies = [
+ "aoc-utils",
+ "criterion",
+ "rstest",
+]
+
+[[package]]
+name = "day-09-mirage-maintenance"
+version = "1.0.0"
+dependencies = [
+ "aoc-utils",
+ "criterion",
+ "rstest",
+]
+
+[[package]]
+name = "day-10-pipe-maze"
+version = "1.0.0"
+dependencies = [
+ "aoc-utils",
+ "criterion",
+ "rstest",
+]
+
+[[package]]
+name = "day-11-cosmic-expansion"
+version = "1.0.0"
+dependencies = [
+ "criterion",
+ "rstest",
+]
+
+[[package]]
+name = "day-12-hot-springs"
+version = "1.0.0"
+dependencies = [
+ "aoc-utils",
+ "criterion",
+ "hashbrown",
+ "rstest",
+]
+
+[[package]]
+name = "day-14-parabolic-reflector-dish"
+version = "1.0.0"
+dependencies = [
+ "criterion",
+ "hashbrown",
+ "rstest",
+]
+
+[[package]]
+name = "day-15-lens-library"
+version = "1.0.0"
+dependencies = [
+ "criterion",
+ "rstest",
 ]
 
 [[package]]

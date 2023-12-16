@@ -1,4 +1,4 @@
-use aoc_2023_utils::{
+use aoc_utils::{
 	ascii_int::{parse_uint, parse_uint_coerce},
 	iteration::expect_n,
 };
@@ -52,8 +52,14 @@ mod tests {
 	use rstest::rstest;
 
 	#[rstest]
-	#[case(include_bytes!("../inputs/example.txt"), Solution(288,71503))]
-	#[case(include_bytes!("../inputs/personal.txt"), Solution(5133600,40651271))]
+	#[case::example(
+		include_bytes!("../inputs/example.txt"),
+		Solution(288,71503),
+	)]
+	#[case::personal(
+		include_bytes!("../inputs/personal.txt"),
+		Solution(5133600,40651271),
+	)]
 	fn solution(#[case] input: &[u8], #[case] expected: Solution) {
 		assert_eq!(solve(input), expected);
 	}

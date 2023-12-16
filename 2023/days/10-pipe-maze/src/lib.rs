@@ -22,17 +22,47 @@ mod tests {
 	use rstest::rstest;
 
 	#[rstest]
-	#[case::example_1_clean(include_bytes!("../inputs/example_1_clean.txt"), Solution(4,1))]
-	#[case::example_1(include_bytes!("../inputs/example_1.txt"), Solution(4,1))]
-	#[case::example_2_clean(include_bytes!("../inputs/example_2_clean.txt"), Solution(8,1))]
-	#[case::example_2(include_bytes!("../inputs/example_2.txt"), Solution(8,1))]
-	#[case::example_3(include_bytes!("../inputs/example_3.txt"), Solution(23,4))]
-	#[case::example_3_squeeze(include_bytes!("../inputs/example_3_squeeze.txt"), Solution(22,4))]
-	#[case::example_4(include_bytes!("../inputs/example_4.txt"), Solution(70, 8))]
-	#[case::example_5(include_bytes!("../inputs/example_5.txt"), Solution(80, 10))]
-	#[case::example_6(include_bytes!("../inputs/example_6.txt"), Solution(22, 43))]
-	#[case::personal(include_bytes!("../inputs/personal.txt"), Solution(6701,303))]
-	fn solution_raycasting(
+	#[case::example_1_clean(
+		include_bytes!("../inputs/example_1_clean.txt"),
+		Solution(4,1),
+	)]
+	#[case::example_1(
+		include_bytes!("../inputs/example_1.txt"),
+		Solution(4,1),
+	)]
+	#[case::example_2_clean(
+		include_bytes!("../inputs/example_2_clean.txt"),
+		Solution(8,1),
+	)]
+	#[case::example_2(
+		include_bytes!("../inputs/example_2.txt"),
+		Solution(8,1),
+	)]
+	#[case::example_3(
+		include_bytes!("../inputs/example_3.txt"),
+		Solution(23,4),
+	)]
+	#[case::example_3_squeeze(
+		include_bytes!("../inputs/example_3_squeeze.txt"),
+		Solution(22,4),
+	)]
+	#[case::example_4(
+		include_bytes!("../inputs/example_4.txt"),
+		Solution(70, 8),
+	)]
+	#[case::example_5(
+		include_bytes!("../inputs/example_5.txt"),
+		Solution(80, 10),
+	)]
+	#[case::example_6(
+		include_bytes!("../inputs/example_6.txt"),
+		Solution(22, 43),
+	)]
+	#[case::personal(
+		include_bytes!("../inputs/personal.txt"),
+		Solution(6701,303),
+	)]
+	fn solution(
 		#[case] input: &[u8],
 		#[case] expected: Solution,
 		#[values(shoelace_picks::solve, raycast::solve)] solver: impl Fn(&[u8]) -> Solution,

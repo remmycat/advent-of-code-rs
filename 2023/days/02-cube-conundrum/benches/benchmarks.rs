@@ -1,4 +1,4 @@
-use aoc_2023_15::solve;
+use day_02_cube_conundrum::solve;
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
 use std::hint::black_box;
 

@@ -9,5 +9,5 @@ rstest.workspace = true
 criterion.workspace = true
 
 [[bench]]
-name = "solution"
+name = "benchmarks"
 harness = false

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use hashbrown::HashMap;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Solution(usize, usize);
@@ -217,8 +217,14 @@ mod tests {
 	use rstest::rstest;
 
 	#[rstest]
-	#[case::example(include_bytes!("../inputs/example.txt"), Solution(136,64))]
-	#[case::personal(include_bytes!("../inputs/personal.txt"), Solution(108614,0))]
+	#[case::example(
+		include_bytes!("../inputs/example.txt"),
+		Solution(136,64),
+	)]
+	#[case::personal(
+		include_bytes!("../inputs/personal.txt"),
+		Solution(108614,96447),
+	)]
 	fn solution(#[case] input: &[u8], #[case] expected: Solution) {
 		assert_eq!(solve(input), expected);
 	}

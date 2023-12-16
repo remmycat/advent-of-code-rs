@@ -15,22 +15,22 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 
 | Day | Name                            |     Time | Feeling |
 | :-: | :------------------------------ | -------: | :-----: |
-| 01  | Trebuchet?!                     |    33 μs |   🙂    |
-| 02  | Cube Conundrum                  |  23.0 μs |   😎    |
+| 01  | Trebuchet?!                     |    34 μs |   🙂    |
+| 02  | Cube Conundrum                  |  22.6 μs |   😎    |
 | 03  | Gear Ratios                     |    52 μs |   🙂    |
 | 04  | Scratchcards                    |   7.6 μs |   😎    |
-| 05  | If You Give A Seed A Fertilizer |  17.7 μs |   🙂    |
-| 06  | Wait For It                     |   155 ns |   😎    |
+| 05  | If You Give A Seed A Fertilizer |  17.9 μs |   🙂    |
+| 06  | Wait For It                     |   161 ns |   😎    |
 | 07  | Camel Cards                     |    42 μs |   😎    |
 | 08  |                                 |          |         |
-| 09  | Mirage Maintenance              |  42.6 μs |   🙂    |
-| 10  | Pipe Maze                       |    46 μs |   😎    |
+| 09  | Mirage Maintenance              |  43.7 μs |   🙂    |
+| 10  | Pipe Maze                       |    58 μs |   😎    |
 | 11  | Cosmic Expansion                |   9.5 μs |   🌈    |
-| 12  | Hot Springs                     |  22.3 ms |   🤔    |
+| 12  | Hot Springs                     |  22.4 ms |   🤔    |
 | 13  |                                 |          |         |
-| 14  | Parabolic Reflector Dish        |  24.3 ms |   😕    |
-| 15  | Lens Library                    |    69 µs |   🙂    |
-| 16  | The Floor Will Be Lava<br>(brute force part 2) |  37.6 ms |   😕    |
+| 14  | Parabolic Reflector Dish        |  20.9 ms |   😕    |
+| 15  | Lens Library                    |    65 µs |   🙂    |
+| 16  | The Floor Will Be Lava          |  38.9 ms |   😕    |
 
 
 ### 2022
