@@ -1,32 +1,8 @@
-use std::ops::Neg;
-
+use aoc_utils::direction::*;
 use pathfinding::prelude::astar;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Solution(usize, usize);
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-enum Direction {
-	North,
-	East,
-	South,
-	West,
-}
-
-impl Neg for Direction {
-	type Output = Direction;
-
-	fn neg(self) -> Self::Output {
-		match self {
-			North => South,
-			East => West,
-			South => North,
-			West => East,
-		}
-	}
-}
-
-use Direction::*;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Pos {
@@ -135,7 +111,7 @@ pub fn solve(input: &[u8]) -> Solution {
 		|(pos, state)| {
 			let has_to_turn = state.straight_count == 3;
 			let moving_forwards = state.coming_from;
-			let moving_backwards = -state.coming_from;
+			let moving_backwards = state.coming_from.opposite();
 			[
 				(pos.if_coming_from(North), state.if_coming_from(North)),
 				(pos.if_coming_from(East), state.if_coming_from(East)),
@@ -164,7 +140,7 @@ pub fn solve(input: &[u8]) -> Solution {
 			let can_turn = state.straight_count >= 4;
 			let has_to_turn = state.straight_count == 10;
 			let moving_forwards = state.coming_from;
-			let moving_backwards = -state.coming_from;
+			let moving_backwards = state.coming_from.opposite();
 			let is_start = state.straight_count == 0;
 			[
 				(pos.if_coming_from(North), state.if_coming_from(North)),

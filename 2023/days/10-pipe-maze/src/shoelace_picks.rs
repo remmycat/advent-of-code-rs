@@ -1,4 +1,5 @@
-use super::{sym, Solution};
+use crate::{follow_facing_pipe, sym, Solution};
+use aoc_utils::direction::*;
 
 #[derive(Debug)]
 struct Maze<'a> {
@@ -28,10 +29,10 @@ impl<'a> Maze<'a> {
 
 	fn start_running(&self) -> MazeRunner {
 		[
-			(Direction::South, Some(self.start + self.line_width)),
-			(Direction::North, self.start.checked_sub(self.line_width)),
-			(Direction::East, Some(self.start + 1)),
-			// (Direction::West, self.start.checked_sub(1)),
+			(South, Some(self.start + self.line_width)),
+			(North, self.start.checked_sub(self.line_width)),
+			(East, Some(self.start + 1)),
+			// (West, self.start.checked_sub(1)),
 		]
 		.into_iter()
 		.find_map(|(dir, index)| {
@@ -41,7 +42,7 @@ impl<'a> Maze<'a> {
 			}
 
 			// assure this facing direction is leading to a next location
-			dir.follow_facing_pipe(self.map[index])?;
+			follow_facing_pipe(&dir, self.map[index])?;
 
 			Some(MazeRunner {
 				position: self.start,
@@ -53,27 +54,6 @@ impl<'a> Maze<'a> {
 			})
 		})
 		.expect("expected 1 (of 2) start connections")
-	}
-}
-
-#[derive(Debug, Clone)]
-enum Direction {
-	North,
-	South,
-	East,
-	West,
-}
-
-impl Direction {
-	fn follow_facing_pipe(&self, maybe_pipe: u8) -> Option<Direction> {
-		use Direction::*;
-		match (self, maybe_pipe) {
-			(North, sym::VERT) | (East, sym::TOP_LEFT) | (West, sym::TOP_RIGHT) => Some(North),
-			(North, sym::BOT_RIGHT) | (East, sym::HOR) | (South, sym::TOP_RIGHT) => Some(East),
-			(South, sym::VERT) | (East, sym::BOT_LEFT) | (West, sym::BOT_RIGHT) => Some(South),
-			(North, sym::BOT_LEFT) | (West, sym::HOR) | (South, sym::TOP_LEFT) => Some(West),
-			_ => None, // this also covers ground and newline
-		}
 	}
 }
 
@@ -90,10 +70,10 @@ struct MazeRunner {
 impl MazeRunner {
 	fn follow_pipe_or_end(&mut self, maze: &Maze) -> bool {
 		let (next_position, next_x, next_y) = match self.facing {
-			Direction::North => (self.position - maze.line_width, self.x, self.y - 1),
-			Direction::East => (self.position + 1, self.x + 1, self.y),
-			Direction::South => (self.position + maze.line_width, self.x, self.y + 1),
-			Direction::West => (self.position - 1, self.x - 1, self.y),
+			North => (self.position - maze.line_width, self.x, self.y - 1),
+			East => (self.position + 1, self.x + 1, self.y),
+			South => (self.position + maze.line_width, self.x, self.y + 1),
+			West => (self.position - 1, self.x - 1, self.y),
 		};
 
 		self.distance += 1;
@@ -105,9 +85,7 @@ impl MazeRunner {
 
 		let next_b = maze.map[next_position];
 
-		let next_facing = self
-			.facing
-			.follow_facing_pipe(next_b)
+		let next_facing = follow_facing_pipe(&self.facing, next_b)
 			.expect("expected to be able to follow all pipes");
 
 		self.position = next_position;

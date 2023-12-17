@@ -1,3 +1,5 @@
+use aoc_utils::direction::*;
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct Solution(usize, usize);
 
@@ -69,16 +71,6 @@ impl Map {
 	}
 }
 
-#[derive(Debug, Clone, Copy)]
-enum Direction {
-	North,
-	East,
-	South,
-	West,
-}
-
-use Direction::*;
-
 #[derive(Debug, Clone, Copy, Default)]
 struct Breadcrumb(u8);
 
@@ -147,20 +139,12 @@ impl<'a> MazeRunner<'a> {
 				other.facing = South;
 				Some(Some(other))
 			}
-			(East, Tile::DiagUphill) | (West, Tile::DiagDownhill) => {
-				self.facing = North;
+			(East | West, Tile::DiagUphill) | (North | South, Tile::DiagDownhill) => {
+				self.facing = self.facing.turn_widdershins();
 				Some(None)
 			}
-			(East, Tile::DiagDownhill) | (West, Tile::DiagUphill) => {
-				self.facing = South;
-				Some(None)
-			}
-			(North, Tile::DiagUphill) | (South, Tile::DiagDownhill) => {
-				self.facing = East;
-				Some(None)
-			}
-			(North, Tile::DiagDownhill) | (South, Tile::DiagUphill) => {
-				self.facing = West;
+			(East | West, Tile::DiagDownhill) | (North | South, Tile::DiagUphill) => {
+				self.facing = self.facing.turn_clockwise();
 				Some(None)
 			}
 			_ => Some(None),

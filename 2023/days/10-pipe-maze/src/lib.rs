@@ -1,3 +1,5 @@
+use aoc_utils::direction::*;
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct Solution(usize, usize);
 
@@ -11,6 +13,16 @@ mod sym {
 	pub const TOP_LEFT: u8 = b'J';
 	pub const BOT_RIGHT: u8 = b'F';
 	pub const BOT_LEFT: u8 = b'7';
+}
+
+const fn follow_facing_pipe(dir: &Direction, maybe_pipe: u8) -> Option<Direction> {
+	match (dir, maybe_pipe) {
+		(North, sym::VERT) | (East, sym::TOP_LEFT) | (West, sym::TOP_RIGHT) => Some(North),
+		(North, sym::BOT_RIGHT) | (East, sym::HOR) | (South, sym::TOP_RIGHT) => Some(East),
+		(South, sym::VERT) | (East, sym::BOT_LEFT) | (West, sym::BOT_RIGHT) => Some(South),
+		(North, sym::BOT_LEFT) | (West, sym::HOR) | (South, sym::TOP_LEFT) => Some(West),
+		_ => None, // this also covers ground and newline
+	}
 }
 
 pub mod raycast;

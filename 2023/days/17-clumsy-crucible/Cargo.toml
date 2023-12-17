@@ -5,6 +5,7 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
+aoc-utils = { path = "../../utils" }
 pathfinding = "4.6"
 
 [dev-dependencies]

@@ -4,6 +4,9 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 
+[dependencies]
+aoc-utils = { path = "../../utils" }
+
 [dev-dependencies]
 rstest.workspace = true
 criterion.workspace = true

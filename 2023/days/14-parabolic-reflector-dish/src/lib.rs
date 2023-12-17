@@ -1,4 +1,5 @@
 use hashbrown::HashMap;
+use std::fmt;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Solution(usize, usize);
@@ -31,34 +32,34 @@ struct Grid {
 	solids: Vec<Solid>,
 }
 
-// impl fmt::Debug for Grid {
-// 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-// 		write!(f, "Grid ({} x {})", self.width, self.height)?;
-// 		write!(f, "\n ┏")?;
-// 		for _ in 0..self.width {
-// 			write!(f, "━")?;
-// 		}
-// 		write!(f, "┓")?;
-// 		for y in 0..self.height {
-// 			write!(f, "\n ┃")?;
-// 			let x_start = y * self.width;
-// 			for solid in self.solids[x_start..(x_start + self.width)].iter() {
-// 				match solid {
-// 					Solid::Rock => write!(f, "○"),
-// 					Solid::Stone => write!(f, "▇"),
-// 					_ => write!(f, " "),
-// 				}?;
-// 			}
-// 			write!(f, "┃")?;
-// 		}
-// 		write!(f, "\n ┗")?;
-// 		for _ in 0..self.width {
-// 			write!(f, "━")?;
-// 		}
-// 		write!(f, "┛")?;
-// 		Ok(())
-// 	}
-// }
+impl fmt::Debug for Grid {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		write!(f, "Grid ({} x {})", self.width, self.height)?;
+		write!(f, "\n ┏")?;
+		for _ in 0..self.width {
+			write!(f, "━")?;
+		}
+		write!(f, "┓")?;
+		for y in 0..self.height {
+			write!(f, "\n ┃")?;
+			let x_start = y * self.width;
+			for solid in self.solids[x_start..(x_start + self.width)].iter() {
+				match solid {
+					Solid::Rock => write!(f, "○"),
+					Solid::Stone => write!(f, "▇"),
+					_ => write!(f, " "),
+				}?;
+			}
+			write!(f, "┃")?;
+		}
+		write!(f, "\n ┗")?;
+		for _ in 0..self.width {
+			write!(f, "━")?;
+		}
+		write!(f, "┛")?;
+		Ok(())
+	}
+}
 
 impl Grid {
 	fn parse(input: &[u8]) -> Self {

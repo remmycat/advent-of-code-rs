@@ -272,6 +272,7 @@ dependencies = [
 name = "day-16-the-floor-will-be-lava"
 version = "1.0.0"
 dependencies = [
+ "aoc-utils",
  "criterion",
  "rstest",
 ]
@@ -280,6 +281,7 @@ dependencies = [
 name = "day-17-clumsy-crucible"
 version = "1.0.0"
 dependencies = [
+ "aoc-utils",
  "criterion",
  "pathfinding",
  "rstest",
