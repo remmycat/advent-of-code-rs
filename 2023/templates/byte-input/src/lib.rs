@@ -11,11 +11,11 @@ mod tests {
 	use rstest::rstest;
 
 	#[rstest]
-	#[case(
+	#[case::example(
 		include_bytes!("../inputs/example.txt"),
 		Solution(0,0),
 	)]
-	#[case(
+	#[case::personal(
 		include_bytes!("../inputs/personal.txt"),
 		Solution(0,0),
 	)]
