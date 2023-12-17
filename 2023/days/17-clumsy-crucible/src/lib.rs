@@ -185,7 +185,7 @@ pub fn solve(input: &[u8]) -> Solution {
 			})
 		},
 		|(pos, _)| pos.distance(&goal),
-		|(pos, _)| *pos == goal,
+		|(pos, state)| *pos == goal && state.straight_count >= 4,
 	)
 	.expect("must have shortest path");
 
@@ -201,6 +201,10 @@ mod tests {
 	#[case::example(
 		include_bytes!("../inputs/example.txt"),
 		Solution(102,94),
+	)]
+	#[case::example_2(
+		include_bytes!("../inputs/example_2.txt"),
+		Solution(59,71),
 	)]
 	#[case::personal(
 		include_bytes!("../inputs/personal.txt"),
