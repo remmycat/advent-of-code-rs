@@ -1,3 +1,5 @@
+use std::iter::successors;
+
 use aoc_utils::direction::*;
 use pathfinding::prelude::astar;
 
@@ -5,55 +7,65 @@ use pathfinding::prelude::astar;
 pub struct Solution(usize, usize);
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-struct Pos {
-	row: i16,
-	col: i16,
-}
+struct Point(i16, i16);
 
-impl Pos {
-	fn distance(&self, other: &Pos) -> u16 {
-		self.row.abs_diff(other.row) + self.col.abs_diff(other.col)
+impl Point {
+	fn distance(&self, other: &Point) -> u16 {
+		self.0.abs_diff(other.0) + self.1.abs_diff(other.1)
 	}
 
-	fn if_coming_from(&self, coming_from: Direction) -> Pos {
-		match coming_from {
-			North => Pos {
-				row: self.row + 1,
-				col: self.col,
-			},
-			South => Pos {
-				row: self.row - 1,
-				col: self.col,
-			},
-			East => Pos {
-				row: self.row,
-				col: self.col - 1,
-			},
-			West => Pos {
-				row: self.row,
-				col: self.col + 1,
-			},
+	fn neighbour(&self, direction: &Direction) -> Point {
+		match direction {
+			North => Point(self.0, self.1 - 1),
+			East => Point(self.0 + 1, self.1),
+			South => Point(self.0, self.1 + 1),
+			West => Point(self.0 - 1, self.1),
 		}
 	}
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-struct State {
-	coming_from: Direction,
-	straight_count: u8,
-}
+fn find_lowest_heat_loss(grid: &Grid, min_step: usize, max_step: usize) -> u16 {
+	let start_point = Point(0, 0);
+	let end_point = Point(grid.width - 1, grid.height - 1);
+	let start_direction: Option<Direction> = None;
+	let successor_count = max_step - min_step + 1;
 
-impl State {
-	fn if_coming_from(&self, coming_from: Direction) -> State {
-		State {
-			coming_from,
-			straight_count: if coming_from == self.coming_from {
-				self.straight_count + 1
-			} else {
-				1
-			},
-		}
-	}
+	let (_, lowest_loss) = astar(
+		&(start_point, start_direction),
+		|(point, facing)| {
+			// "facing == None" means we're just starting and can go south or east!
+			let (widdershins, clockwise) = facing
+				.map(|dir| (dir.turn_widdershins(), dir.turn_clockwise()))
+				.unwrap_or((South, East));
+
+			let first_widdershins = grid.get_point_and_heat(point.neighbour(&widdershins));
+
+			let widdershins_points = successors(first_widdershins, move |(point, cost)| {
+				grid.get_point_and_heat(point.neighbour(&widdershins))
+					.map(|(next_point, next_cost)| (next_point, cost + next_cost))
+			})
+			.skip(min_step - 1)
+			.take(successor_count)
+			.map(move |(point, cost)| ((point, Some(widdershins)), cost));
+
+			let first_clockwise = grid.get_point_and_heat(point.neighbour(&clockwise));
+
+			let clock_points = successors(first_clockwise, move |(point, cost)| {
+				grid.get_point_and_heat(point.neighbour(&clockwise))
+					.map(|(next_point, next_cost)| (next_point, cost + next_cost))
+			})
+			.skip(min_step - 1)
+			.take(successor_count)
+			.map(move |(point, cost)| ((point, Some(clockwise)), cost));
+
+			widdershins_points.chain(clock_points)
+		},
+		|(point, _)| point.distance(&end_point),
+		|(point, _)| *point == end_point,
+	)
+	.expect("must have shortest path");
+
+	lowest_loss
 }
 
 struct Grid<'i> {
@@ -79,93 +91,35 @@ impl<'i> Grid<'i> {
 		}
 	}
 
-	fn is_valid_pos(&self, pos: &Pos) -> bool {
-		pos.row >= 0 && pos.row < self.height && pos.col >= 0 && pos.col < self.width
+	fn is_valid_point(&self, &Point(x, y): &Point) -> bool {
+		x >= 0 && x < self.width && y >= 0 && y < self.height
 	}
 
-	fn get_cost_at(&self, pos: &Pos) -> u16 {
-		let index = (pos.row * self.line_width + pos.col) as usize;
+	fn get_heat_loss_at(&self, &Point(x, y): &Point) -> u16 {
+		let index = (y * self.line_width + x) as usize;
 		(self.input[index] - b'0') as u16
+	}
+
+	fn get_point_and_heat(&self, point: Point) -> Option<(Point, u16)> {
+		if self.is_valid_point(&point) {
+			let heat_loss = self.get_heat_loss_at(&point);
+			Some((point, heat_loss))
+		} else {
+			None
+		}
 	}
 }
 
 pub fn solve(input: &[u8]) -> Solution {
 	let grid = Grid::parse(input);
-	let gridref = &grid;
 
-	let start = (
-		Pos { row: 0, col: 0 },
-		State {
-			coming_from: West,
-			straight_count: 0,
-		},
-	);
+	let lowest_heat_loss = find_lowest_heat_loss(&grid, 1, 3);
+	let lowest_heat_loss_ultra_crucible = find_lowest_heat_loss(&grid, 4, 10);
 
-	let goal = Pos {
-		row: grid.height - 1,
-		col: grid.width - 1,
-	};
-
-	let (_, lowest_cost) = astar(
-		&start,
-		|(pos, state)| {
-			let has_to_turn = state.straight_count == 3;
-			let moving_forwards = state.coming_from;
-			let moving_backwards = state.coming_from.opposite();
-			[
-				(pos.if_coming_from(North), state.if_coming_from(North)),
-				(pos.if_coming_from(East), state.if_coming_from(East)),
-				(pos.if_coming_from(South), state.if_coming_from(South)),
-				(pos.if_coming_from(West), state.if_coming_from(West)),
-			]
-			.into_iter()
-			.filter(move |(next_pos, next_state)| {
-				next_state.coming_from != (moving_backwards)
-					&& (!has_to_turn || next_state.coming_from != moving_forwards)
-					&& gridref.is_valid_pos(next_pos)
-			})
-			.map(|(pos, state)| {
-				let cost = gridref.get_cost_at(&pos);
-				((pos, state), cost)
-			})
-		},
-		|(pos, _)| pos.distance(&goal),
-		|(pos, _)| *pos == goal,
+	Solution(
+		lowest_heat_loss as usize,
+		lowest_heat_loss_ultra_crucible as usize,
 	)
-	.expect("must have shortest path");
-
-	let (_, lowest_cost_ultra_crucible) = astar(
-		&start,
-		|(pos, state)| {
-			let can_turn = state.straight_count >= 4;
-			let has_to_turn = state.straight_count == 10;
-			let moving_forwards = state.coming_from;
-			let moving_backwards = state.coming_from.opposite();
-			let is_start = state.straight_count == 0;
-			[
-				(pos.if_coming_from(North), state.if_coming_from(North)),
-				(pos.if_coming_from(East), state.if_coming_from(East)),
-				(pos.if_coming_from(South), state.if_coming_from(South)),
-				(pos.if_coming_from(West), state.if_coming_from(West)),
-			]
-			.into_iter()
-			.filter(move |(next_pos, next_state)| {
-				next_state.coming_from != (moving_backwards)
-					&& (can_turn || is_start || next_state.coming_from == moving_forwards)
-					&& (!has_to_turn || next_state.coming_from != moving_forwards)
-					&& gridref.is_valid_pos(next_pos)
-			})
-			.map(|(pos, state)| {
-				let cost = gridref.get_cost_at(&pos);
-				((pos, state), cost)
-			})
-		},
-		|(pos, _)| pos.distance(&goal),
-		|(pos, state)| *pos == goal && state.straight_count >= 4,
-	)
-	.expect("must have shortest path");
-
-	Solution(lowest_cost as usize, lowest_cost_ultra_crucible as usize)
 }
 
 #[cfg(test)]
