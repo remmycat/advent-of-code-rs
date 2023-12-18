@@ -1,5 +1,5 @@
 [package]
-name = "day-00"
+name = "day-13-point-of-incidence"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

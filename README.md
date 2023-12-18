@@ -27,7 +27,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 10  | Pipe Maze                       |    44 μs |   😎    |
 | 11  | Cosmic Expansion                |   9.5 μs |   🌈    |
 | 12  | Hot Springs                     |  22.4 ms |   🤔    |
-| 13  |                                 |          |         |
+| 13  | Point of Incidence              |    58 μs |   🙂    |
 | 14  | Parabolic Reflector Dish        |  20.9 ms |   😕    |
 | 15  | Lens Library                    |    65 µs |   🙂    |
 | 16  | The Floor Will Be Lava          |  38.9 ms |   😕    |
