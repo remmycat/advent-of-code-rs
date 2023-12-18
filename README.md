@@ -24,7 +24,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 07  | Camel Cards                     |    42 μs |   😎    |
 | 08  |                                 |          |         |
 | 09  | Mirage Maintenance              |  43.7 μs |   🙂    |
-| 10  | Pipe Maze                       |    58 μs |   😎    |
+| 10  | Pipe Maze                       |    44 μs |   😎    |
 | 11  | Cosmic Expansion                |   9.5 μs |   🌈    |
 | 12  | Hot Springs                     |  22.4 ms |   🤔    |
 | 13  |                                 |          |         |
@@ -32,7 +32,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 15  | Lens Library                    |    65 µs |   🙂    |
 | 16  | The Floor Will Be Lava          |  38.9 ms |   😕    |
 | 17  | Clumsy Crucible                 |  38.3 ms |   😕    |
-| 18  | Lavaduct Lagoon                 |       µs |   🌈    |
+| 18  | Lavaduct Lagoon                 |  10.9 µs |   🌈    |
 
 
 ### 2022
