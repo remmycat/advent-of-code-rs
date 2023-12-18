@@ -1,14 +1,13 @@
 use aoc_utils::{
 	ascii_int::{parse_uint_hex_lowercase_unchecked, parse_uint_unchecked},
-	iteration::expect_n,
+	trim::trim_end_newline,
 };
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Solution(usize, usize);
 
 pub fn solve(input: &[u8]) -> Solution {
-	// x mostly cancels out in shoelace sum, it's irrelevant to track
-
+	// current x mostly cancels out in shoelace sum, it's irrelevant to track
 	let mut y: isize = 0;
 	let mut shoelace_sum: isize = 0;
 	let mut points_amount: usize = 0;
@@ -17,14 +16,11 @@ pub fn solve(input: &[u8]) -> Solution {
 	let mut shoelace_sum_big: isize = 0;
 	let mut points_amount_big: usize = 0;
 
-	for line in input.split(|b| *b == b'\n') {
-		if line.is_empty() {
-			continue;
-		}
-
+	for line in trim_end_newline(input).split(|b| *b == b'\n') {
 		let dir = line[0];
-		let [amount, hex] = expect_n(line[2..].split(|b| *b == b' '), "expected amount");
-		let amount = parse_uint_unchecked(amount);
+		let line_len = line.len();
+
+		let amount = parse_uint_unchecked(&line[2..(line_len - 10)]);
 
 		points_amount += amount;
 		let amount = amount as isize;
@@ -34,13 +30,11 @@ pub fn solve(input: &[u8]) -> Solution {
 			// Up
 			// Shoelace x part always evaluates to 0, so the product is 0
 			b'U' => {
-				// can be ignored for shoelace sum!
 				y -= amount;
 			}
 			// Down
 			// Shoelace x part always evaluates to 0, so the product is 0
 			b'D' => {
-				// can be ignored for shoelace sum!
 				y += amount;
 			}
 			// Left
@@ -60,8 +54,10 @@ pub fn solve(input: &[u8]) -> Solution {
 			_ => panic!("unexpected dir"),
 		};
 
-		let dir = hex[7];
-		let amount = parse_uint_hex_lowercase_unchecked(&hex[2..7]);
+		let hex = &line[(line_len - 7)..(line_len - 2)];
+		let dir = line[line_len - 2];
+
+		let amount = parse_uint_hex_lowercase_unchecked(hex);
 
 		points_amount_big += amount;
 
@@ -98,6 +94,8 @@ pub fn solve(input: &[u8]) -> Solution {
 	let area_big = shoelace_sum_big.unsigned_abs() / 2;
 	let points_inside_big = area_big - points_amount_big / 2 + 1;
 	let points_total_big = points_inside_big + points_amount_big;
+
+	// println!("{points_amount_big}");
 
 	Solution(points_total, points_total_big)
 }
