@@ -288,6 +288,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "day-18-lavaduct-lagoon"
+version = "1.0.0"
+dependencies = [
+ "aoc-utils",
+ "criterion",
+ "rstest",
+]
+
+[[package]]
 name = "deprecate-until"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

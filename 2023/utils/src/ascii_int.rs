@@ -4,6 +4,11 @@ fn b_digit_usize_unchecked(b: u8) -> usize {
 }
 
 #[inline(always)]
+fn b_hex_lower_unchecked(b: u8) -> usize {
+	((b - b'a') + 10) as usize
+}
+
+#[inline(always)]
 fn b_digit_usize(b: u8) -> usize {
 	if !b.is_ascii_digit() {
 		panic!("Not an ascii digit")
@@ -34,6 +39,17 @@ pub fn parse_uint_coerce(digits: &[u8]) -> usize {
 			dig * 10 + b_digit_usize_unchecked(*b)
 		} else {
 			dig
+		}
+	})
+}
+
+#[inline]
+pub fn parse_uint_hex_lowercase_unchecked(digits: &[u8]) -> usize {
+	digits.iter().fold(0, |dig, b| {
+		if b.is_ascii_digit() {
+			(dig << 4) + b_digit_usize_unchecked(*b)
+		} else {
+			(dig << 4) + b_hex_lower_unchecked(*b)
 		}
 	})
 }
