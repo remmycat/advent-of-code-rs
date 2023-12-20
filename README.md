@@ -34,7 +34,12 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 17  | Clumsy Crucible                 |  38.3 ms |   😕    |
 | 18  | Lavaduct Lagoon                 |   7.2 µs |   🌈    |
 | 19  | Aplenty                         |    82 µs |   🙂    |
+| 20  | Pulse Propagation               |  11ms[^c]|   😕    |
 
+[^c]: This is the time when taking into account some assumptions about how the
+input is crafted, as the problem gets significantly more complex otherwise. The
+code is currently assuring that these assumptions hold true (for a big runtime
+toll), but I'll likely remove these checks if I go back to optimise it.
 
 ### 2022
 

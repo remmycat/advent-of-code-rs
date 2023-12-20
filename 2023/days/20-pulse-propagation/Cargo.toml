@@ -1,0 +1,17 @@
+[package]
+name = "day-20-pulse-propagation"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+aoc-utils = { path = "../../utils" }
+hashbrown = "0.14"
+
+[dev-dependencies]
+rstest.workspace = true
+criterion.workspace = true
+
+[[bench]]
+name = "benchmarks"
+harness = false
