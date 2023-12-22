@@ -325,6 +325,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "day-22-sand-slabs"
+version = "1.0.0"
+dependencies = [
+ "aoc-utils",
+ "criterion",
+ "rstest",
+]
+
+[[package]]
 name = "deprecate-until"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

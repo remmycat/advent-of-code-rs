@@ -1,0 +1,16 @@
+[package]
+name = "day-22-sand-slabs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+aoc-utils = { path = "../../utils" }
+
+[dev-dependencies]
+rstest.workspace = true
+criterion.workspace = true
+
+[[bench]]
+name = "benchmarks"
+harness = false
