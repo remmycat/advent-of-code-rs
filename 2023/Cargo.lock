@@ -334,6 +334,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "day-23-a-long-walk"
+version = "1.0.0"
+dependencies = [
+ "aoc-utils",
+ "criterion",
+ "pathfinding",
+ "rstest",
+]
+
+[[package]]
 name = "deprecate-until"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -582,9 +592,9 @@ checksum = "0ab1bc2a289d34bd04a330323ac98a1b4bc82c9d9fcb1e66b63caa84da26b575"
 
 [[package]]
 name = "pathfinding"
-version = "4.6.0"
+version = "4.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ea07a6e677e47d6a84724d4fdf88b1e37fcb49ac94e236d7caeefd8fee75c8a"
+checksum = "f6f4a3f5089b981000cb50ec24320faf7a19649a45e8730e4adf49f78f066528"
 dependencies = [
  "deprecate-until",
  "fixedbitset",
