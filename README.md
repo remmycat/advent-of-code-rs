@@ -9,6 +9,15 @@ Emojis reflect my feeling on the time and if it's improvable, based on intuition
 
 Time precision depends on the variance measured during the benchmarks.
 
+### 2025
+
+Hardware: `MacBook Air (13-inch, 2020), Apple M1`
+
+| Day | Name                            |     Time | Feeling |
+| :-: | :------------------------------ | -------: | :-----: |
+| 01  | Secret Entrance                 |    22 μs |   🙂    |
+| 02  | Gift Shop                       |   1.9 μs |   😎    |
+
 ### 2023
 
 Hardware: `MacBook Air (13-inch, 2020), Apple M1`
