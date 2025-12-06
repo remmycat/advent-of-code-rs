@@ -17,6 +17,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | :-: | :------------------------------ | -------: | :-----: |
 | 01  | Secret Entrance                 |    22 μs |   🙂    |
 | 02  | Gift Shop                       |   1.9 μs |   😎    |
+| 03  | Lobby                           |    85 μs |   🙂    |
 
 ### 2023
 
@@ -35,12 +36,12 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 09  | Mirage Maintenance              |  43.7 μs |   🙂    |
 | 10  | Pipe Maze                       |    44 μs |   😎    |
 | 11  | Cosmic Expansion                |   9.5 μs |   🌈    |
-| 12  | Hot Springs                     |  22.4 ms |   🤔    |
+| 12  | Hot Springs                     |  22.4 ms |   🤔    |
 | 13  | Point of Incidence              |    39 μs |   😎    |
-| 14  | Parabolic Reflector Dish        |  20.9 ms |   😕    |
-| 15  | Lens Library                    |    65 µs |   🙂    |
-| 16  | The Floor Will Be Lava          |  38.9 ms |   😕    |
-| 17  | Clumsy Crucible                 |  38.3 ms |   😕    |
+| 14  | Parabolic Reflector Dish        |  20.9 ms |   😕    |
+| 15  | Lens Library                    |    65 µs |   🙂    |
+| 16  | The Floor Will Be Lava          |  38.9 ms |   😕    |
+| 17  | Clumsy Crucible                 |  38.3 ms |   😕    |
 | 18  | Lavaduct Lagoon                 |   7.2 µs |   🌈    |
 | 19  | Aplenty                         |    82 µs |   🙂    |
 | 20  | Pulse Propagation               | 9.4ms[^c]|   😕    |
