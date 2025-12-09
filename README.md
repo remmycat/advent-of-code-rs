@@ -19,7 +19,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 02  | Gift Shop                       |   1.9 μs |   😎    |
 | 03  | Lobby                           |    85 μs |   🙂    |
 | 04  | Printing Department             |   1.2 ms |   😕    |
-| 05  | Cafeteria                       |    77 μs |   🤔    |
+| 05  | Cafeteria                       |    34 μs |   🙂    |
 
 ### 2023
 

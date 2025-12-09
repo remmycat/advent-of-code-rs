@@ -1,4 +1,5 @@
-use aoc_utils::{ascii_int::parse_uint, range_set::IntRangeSet, trim::trim_end_newline};
+use aoc_utils::{range_set::IntRangeSet, trim::trim_end_newline};
+use atoi_simd as atoi;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Solution(usize, usize);
@@ -18,25 +19,30 @@ pub fn solve(input: &[u8]) -> Solution {
 	let range_input = &input[..break_pos];
 	let item_input = &input[(break_pos + 2)..];
 
-	let mut range_set: IntRangeSet<usize> = IntRangeSet::new();
-
-	for range in range_input.split(|&c| c == b'\n').map(|range_str| {
-		let (left, right) = range_str.split_at(
-			range_str
-				.iter()
-				.position(|&c| c == b'-')
-				.expect("range must have dash"),
-		);
-		let right = &right[1..];
-		(parse_uint(left), parse_uint(right))
-	}) {
-		range_set.add_range(range);
-	}
+	let range_set: IntRangeSet<usize> = range_input
+		.split(|&c| c == b'\n')
+		.map(|range_str| {
+			let (left, right) = range_str.split_at(
+				range_str
+					.iter()
+					.position(|&c| c == b'-')
+					.expect("range must have dash"),
+			);
+			let right = &right[1..];
+			(
+				atoi::parse_pos::<usize>(left).expect("valid int"),
+				atoi::parse_pos::<usize>(right).expect("valid int"),
+			)
+		})
+		.fold(IntRangeSet::new(), |mut set, range| {
+			set.add_range(range);
+			set
+		});
 
 	let included = item_input
 		.split(|&c| c == b'\n')
-		.map(parse_uint)
-		.filter(|item| range_set.ranges.iter().any(|(a, b)| item >= a && item <= b))
+		.map(|item| atoi::parse_pos::<usize>(item).expect("valid uint"))
+		.filter(|item| range_set.contains(item))
 		.count();
 
 	Solution(included, range_set.len())

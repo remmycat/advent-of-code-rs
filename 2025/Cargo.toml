@@ -12,5 +12,6 @@ license = "MIT"
 rstest = "0.26.1"
 criterion = { version = "0.8.0", default-features = false }
 
-[profile.test]
-# opt-level = 3
+[profile.bench]
+# opt-level = 1 # can help getting more debug information in a trace
+# debug = true

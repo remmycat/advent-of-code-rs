@@ -6,9 +6,8 @@ pub struct IntRangeSet<T: Debug + Clone + Add + PartialEq + Eq + Ord + From<u8>>
 	pub ranges: Vec<(T, T)>,
 }
 
-impl<
-		T: Debug + Clone + Copy + Add<Output = T> + Sub<Output = T> + PartialEq + Eq + Ord + From<u8>,
-	> IntRangeSet<T>
+impl<T: Debug + Clone + Copy + Add<Output = T> + Sub<Output = T> + PartialEq + Eq + Ord + From<u8>>
+	IntRangeSet<T>
 {
 	pub const fn new() -> Self {
 		IntRangeSet { ranges: vec![] }
@@ -131,14 +130,28 @@ impl<
 			.fold(0.into(), |acc, r| acc + (r.1 - r.0 + 1.into()))
 	}
 
+	pub fn contains(&self, &element: &T) -> bool {
+		// find first range that has an end >= our element
+		let start_intersecting = self
+			.ranges
+			.partition_point(|other| other.1 + 1.into() < element);
+
+		// if none found, element is not contained
+		if start_intersecting == self.ranges.len() {
+			return false;
+		}
+
+		// if range found, element is contained, as long as the range start is <= our element.
+		self.ranges[start_intersecting].0 <= element
+	}
+
 	pub fn is_empty(&self) -> bool {
 		self.len() == 0.into()
 	}
 }
 
-impl<
-		T: Debug + Clone + Copy + Add<Output = T> + Sub<Output = T> + PartialEq + Eq + Ord + From<u8>,
-	> Default for IntRangeSet<T>
+impl<T: Debug + Clone + Copy + Add<Output = T> + Sub<Output = T> + PartialEq + Eq + Ord + From<u8>>
+	Default for IntRangeSet<T>
 {
 	fn default() -> Self {
 		Self::new()
