@@ -211,6 +211,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "day-06-trash-compactor"
+version = "1.0.0"
+dependencies = [
+ "aoc-utils",
+ "criterion",
+ "rstest",
+]
+
+[[package]]
 name = "debug_unsafe"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
