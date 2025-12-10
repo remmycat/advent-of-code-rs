@@ -21,6 +21,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 04  | Printing Department             |   1.2 ms |   😕    |
 | 05  | Cafeteria                       |    34 μs |   🙂    |
 | 06  | Trash Compactor                 |  21.3 μs |   🙂    |
+| 07  | Laboratories                    |   6.3 μs |   😎    |
 
 ### 2023
 
