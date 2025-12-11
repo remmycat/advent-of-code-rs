@@ -3,7 +3,7 @@
 ## Benchmarks
 
 Benchmarks are done using criterion.
-The solvers always provide a solution to both parts of the day's puzzle in one go, and receive the input as an in-memory string or bytes (depending on what I preferred for that day).
+The solvers always provide a solution to both parts of the day's puzzle in one go, and receive the input as an in-memory byte-slice (In years <= 2022 I also used string inputs).
 
 Emojis reflect my feeling on the time and if it's improvable, based on intuition or other people's submissions.
 
@@ -21,7 +21,7 @@ Hardware: `MacBook Air (13-inch, 2020), Apple M1`
 | 04  | Printing Department             |   1.2 ms |   😕    |
 | 05  | Cafeteria                       |    34 μs |   🙂    |
 | 06  | Trash Compactor                 |  21.3 μs |   🙂    |
-| 07  | Laboratories                    |   6.3 μs |   😎    |
+| 07  | Laboratories                    |   4.7 μs |   😎    |
 | 08  | Playground                      |   5.5 ms |   🤔    |
 
 ### 2023

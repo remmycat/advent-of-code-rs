@@ -22,11 +22,19 @@ pub fn solve(input: &[u8]) -> Solution {
 	let mut splits = 0;
 
 	// skip every second line for calculation, it's just dots
-	for line in (1..height / 2).map(|i| {
+	for (i, line) in (1..height / 2).map(|i| {
 		let line_start = i * 2 * (line_width + 1);
-		&input[line_start..(line_start + line_width)]
+		(i, &input[line_start..(line_start + line_width)])
 	}) {
-		for (split_pos, _) in line.iter().enumerate().filter(|&(_, &c)| c == b'^') {
+		let min_index = start - i; // we can grow one to the left in every row…
+		let max_length = 2 * i + 1; // …and one to the right
+		for (split_pos, _) in line
+			.iter()
+			.enumerate()
+			.skip(min_index)
+			.take(max_length)
+			.filter(|&(_, &c)| c == b'^')
+		{
 			if beams[split_pos] != 0 {
 				let previous = beams[split_pos];
 				// splitters seem to be padded between each other and the border
